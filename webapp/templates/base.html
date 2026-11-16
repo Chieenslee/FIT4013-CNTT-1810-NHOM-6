@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Hệ thống Demo Nhận Dạng Biển Báo Giao Thông GTSRB (43 lớp){% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="brand-badge">FIT4013</div>
+        <div>
+          <h1>Hệ Thống Nhận Dạng Biển Báo Giao Thông GTSRB (43 Lớp)</h1>
+          <p>Trường Đại học Đại Nam · Khoa CNTT · Lớp CNTT 18-10 – Nhóm 6 (Trưởng nhóm: Lê Trọng Chiến)</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span class="meta-pill">Track-Disjoint GroupKFold</span>
+        <span class="meta-pill">F5: HOG + Màu (128d PCA)</span>
+        <span class="meta-pill">Flask Modular Web App</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Học phần Nhập môn Học máy (FIT4013) – GVHD: ThS. Lê Thị Thùy Trang</span>
+      <span>Thành viên: Lê Trọng Chiến (Trưởng nhóm), Đặng Việt Anh, Nguyễn Hữu Dũng, Kiều Văn Nam (@dnu.edu.vn)</span>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

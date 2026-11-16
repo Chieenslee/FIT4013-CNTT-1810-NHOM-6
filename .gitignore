@@ -1,0 +1,28 @@
+# Python & Jupyter caches
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+
+# Large datasets & binary feature caches (never store GTSRB raw archives in Git)
+data/
+gtsrb_data/
+*.npz
+*.zip
+
+# LaTeX build artifacts (keep main.tex & final PDF deliverable)
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.lof
+report/*.lot
+report/*.fls
+report/*.fdb_latexmk
+report/*.synctex.gz
+report/main.pdf
+
+# Course prompt & formatting reference files provided locally
+{40374E3C-CB60-4106-AD7B-39DA1CED7880}.png
+*FIT4013.pdf
+Mẫu cách trình bày.pdf

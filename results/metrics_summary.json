@@ -1,0 +1,2694 @@
+{
+  "dataset": {
+    "train_full_count": 39209,
+    "train_split_count": 31349,
+    "val_split_count": 7860,
+    "train_tracks_count": 1045,
+    "val_tracks_count": 262,
+    "overlap_tracks": 0,
+    "test_count": 12630,
+    "total_images": 51839,
+    "num_classes": 43,
+    "unique_train_tracks": 1307,
+    "train_min_class_count": 210,
+    "train_min_class_id": 0,
+    "train_max_class_count": 2250,
+    "train_max_class_id": 2,
+    "test_min_class_count": 60,
+    "test_max_class_count": 750,
+    "width_min": 25,
+    "width_max": 243,
+    "width_median": 43.0,
+    "height_min": 25,
+    "height_max": 225,
+    "height_median": 43.0,
+    "roi_area_ratio_mean_pct": 56.189884185791016,
+    "brightness_train_mean": 82.00611114501953,
+    "brightness_train_std": 47.6378173828125,
+    "brightness_test_mean": 81.3812026977539,
+    "missing_values": 0,
+    "duplicate_rows": 0,
+    "environment": {
+      "python": "3.13.7",
+      "platform": "Google Colab CPU (2 vCPU Intel Xeon, 12.7 GB RAM)",
+      "numpy": "2.4.4",
+      "pandas": "2.3.3",
+      "scikit_learn": "1.8.0",
+      "scikit_image": "0.26.0",
+      "opencv": "4.13.0"
+    },
+    "leakage_control_comparison": {
+      "random_frame_split_val_acc": 0.986610558530987,
+      "random_frame_split_test_acc": 0.8974663499604117,
+      "track_group_split_val_acc": 0.9142493638676845,
+      "track_group_split_test_acc": 0.8918448139350752
+    }
+  },
+  "hyperparams": {
+    "split": {
+      "method": "StratifiedGroupKFold",
+      "n_splits": 5,
+      "group_by": "track_id",
+      "shared_tracks": 0
+    },
+    "pca": {
+      "n_components": 128,
+      "svd_solver": "full"
+    },
+    "knn_opt_f5": {
+      "k": 11,
+      "weights": "distance",
+      "metric": "euclidean",
+      "algorithm": "brute",
+      "n_jobs": -1
+    },
+    "knn_f3_pca": {
+      "k": 11,
+      "weights": "distance",
+      "metric": "euclidean",
+      "algorithm": "brute",
+      "n_jobs": -1
+    },
+    "dt_opt_f5": {
+      "criterion": "entropy",
+      "max_depth": 15,
+      "random_state": 42
+    },
+    "random_forest": {
+      "n_estimators": 200,
+      "criterion": "gini",
+      "max_depth": null,
+      "min_samples_split": 2,
+      "min_samples_leaf": 1,
+      "max_features": "sqrt",
+      "class_weight": null,
+      "random_state": 42
+    },
+    "mlp": {
+      "hidden_layer_sizes": [
+        256,
+        128
+      ],
+      "activation": "relu",
+      "solver": "adam",
+      "alpha": 0.0001,
+      "batch_size": 256,
+      "learning_rate_init": 0.001,
+      "max_iter": 30,
+      "early_stopping": false,
+      "random_state": 42
+    }
+  },
+  "exp1_features": [
+    {
+      "feature": "F0: No-ROI Raw Grayscale (1024)",
+      "dims": 1024,
+      "explained_variance": 1.0,
+      "knn_val": {
+        "accuracy": 0.33982188295165394,
+        "precision_macro": 0.3064501333365729,
+        "recall_macro": 0.26520056601451947,
+        "f1_macro": 0.2676023815933885,
+        "precision_weighted": 0.37267868161565143,
+        "recall_weighted": 0.33982188295165394,
+        "f1_weighted": 0.3399774512477559,
+        "fit_time_sec": 0.04495090001728386,
+        "pred_time_sec": 6.3723817999707535
+      },
+      "knn_test": {
+        "accuracy": 0.33547110055423596,
+        "precision_macro": 0.3287682013399296,
+        "recall_macro": 0.2745418396717689,
+        "f1_macro": 0.2838853590551835,
+        "precision_weighted": 0.3780416865082382,
+        "recall_weighted": 0.33547110055423596,
+        "f1_weighted": 0.3412234743098521,
+        "fit_time_sec": 0.04495090001728386,
+        "pred_time_sec": 9.723862800048664
+      },
+      "dt_val": {
+        "accuracy": 0.5536895674300254,
+        "precision_macro": 0.45376671191820755,
+        "recall_macro": 0.44468007874984616,
+        "f1_macro": 0.44038700801759983,
+        "precision_weighted": 0.5617990426860974,
+        "recall_weighted": 0.5536895674300254,
+        "f1_weighted": 0.5509944018581496,
+        "fit_time_sec": 65.83202359999996,
+        "pred_time_sec": 0.01354469999205321
+      },
+      "dt_test": {
+        "accuracy": 0.5022169437846398,
+        "precision_macro": 0.41567738356310474,
+        "recall_macro": 0.39424614177344214,
+        "f1_macro": 0.3988513213511687,
+        "precision_weighted": 0.5151926746323712,
+        "recall_weighted": 0.5022169437846398,
+        "f1_weighted": 0.5039845912278091,
+        "fit_time_sec": 65.83202359999996,
+        "pred_time_sec": 0.014563199947588146
+      },
+      "gnb_val": {
+        "accuracy": 0.09592875318066157,
+        "precision_macro": 0.22943073983145074,
+        "recall_macro": 0.11377691645133504,
+        "f1_macro": 0.08616702898701158,
+        "precision_weighted": 0.31466321457677077,
+        "recall_weighted": 0.09592875318066157,
+        "f1_weighted": 0.10307522597325226,
+        "fit_time_sec": 0.24128949991427362,
+        "pred_time_sec": 1.7498608999885619
+      },
+      "gnb_test": {
+        "accuracy": 0.09509105304829771,
+        "precision_macro": 0.2533045274406068,
+        "recall_macro": 0.13299384056942196,
+        "f1_macro": 0.10651310005978384,
+        "precision_weighted": 0.3082233584280922,
+        "recall_weighted": 0.09509105304829771,
+        "f1_weighted": 0.09891699104267522,
+        "fit_time_sec": 0.24128949991427362,
+        "pred_time_sec": 2.8292484000558034
+      }
+    },
+    {
+      "feature": "F1: ROI Raw Grayscale - Baseline (1024)",
+      "dims": 1024,
+      "explained_variance": 1.0,
+      "knn_val": {
+        "accuracy": 0.5083969465648855,
+        "precision_macro": 0.4495055271967022,
+        "recall_macro": 0.42625907468930735,
+        "f1_macro": 0.4269597169323969,
+        "precision_weighted": 0.5347903787301516,
+        "recall_weighted": 0.5083969465648855,
+        "f1_weighted": 0.5109206086214727,
+        "fit_time_sec": 0.04385699995327741,
+        "pred_time_sec": 6.306884000077844
+      },
+      "knn_test": {
+        "accuracy": 0.5058590657165479,
+        "precision_macro": 0.4724696567126167,
+        "recall_macro": 0.42362583108386953,
+        "f1_macro": 0.43760826601562325,
+        "precision_weighted": 0.530600462679073,
+        "recall_weighted": 0.5058590657165479,
+        "f1_weighted": 0.5103326362614377,
+        "fit_time_sec": 0.04385699995327741,
+        "pred_time_sec": 9.891559100011364
+      },
+      "dt_val": {
+        "accuracy": 0.5908396946564886,
+        "precision_macro": 0.5208364106692017,
+        "recall_macro": 0.4891737418481605,
+        "f1_macro": 0.49472188473714274,
+        "precision_weighted": 0.6054487105620912,
+        "recall_weighted": 0.5908396946564886,
+        "f1_weighted": 0.5905507506509156,
+        "fit_time_sec": 67.03367869998328,
+        "pred_time_sec": 0.015290400013327599
+      },
+      "dt_test": {
+        "accuracy": 0.5647664291369755,
+        "precision_macro": 0.486840784397713,
+        "recall_macro": 0.46373212937495034,
+        "f1_macro": 0.47072656172624744,
+        "precision_weighted": 0.567624295466569,
+        "recall_weighted": 0.5647664291369755,
+        "f1_weighted": 0.5628325958192862,
+        "fit_time_sec": 67.03367869998328,
+        "pred_time_sec": 0.022706500021740794
+      },
+      "gnb_val": {
+        "accuracy": 0.1494910941475827,
+        "precision_macro": 0.28797021143039553,
+        "recall_macro": 0.16651378122308355,
+        "f1_macro": 0.13721877954829512,
+        "precision_weighted": 0.37195020727145967,
+        "recall_weighted": 0.1494910941475827,
+        "f1_weighted": 0.16059611309855026,
+        "fit_time_sec": 0.23692980001214892,
+        "pred_time_sec": 1.7076433999463916
+      },
+      "gnb_test": {
+        "accuracy": 0.14180522565320666,
+        "precision_macro": 0.26320592621840305,
+        "recall_macro": 0.1821646723029433,
+        "f1_macro": 0.15229252678125513,
+        "precision_weighted": 0.3028513179538644,
+        "recall_weighted": 0.14180522565320666,
+        "f1_weighted": 0.14740682963060137,
+        "fit_time_sec": 0.23692980001214892,
+        "pred_time_sec": 2.838293100008741
+      }
+    },
+    {
+      "feature": "F2: ROI Raw RGB (3072)",
+      "dims": 3072,
+      "explained_variance": 1.0,
+      "knn_val": {
+        "accuracy": 0.5298982188295165,
+        "precision_macro": 0.47850287840642397,
+        "recall_macro": 0.4568143226282761,
+        "f1_macro": 0.4588313310548265,
+        "precision_weighted": 0.559290380092744,
+        "recall_weighted": 0.5298982188295165,
+        "f1_weighted": 0.536126894186872,
+        "fit_time_sec": 0.12579129997175187,
+        "pred_time_sec": 18.481891899951734
+      },
+      "knn_test": {
+        "accuracy": 0.5288994457640538,
+        "precision_macro": 0.48400131003830654,
+        "recall_macro": 0.45971630753809717,
+        "f1_macro": 0.4634795454818212,
+        "precision_weighted": 0.550622663085069,
+        "recall_weighted": 0.5288994457640538,
+        "f1_weighted": 0.5333565006788838,
+        "fit_time_sec": 0.12579129997175187,
+        "pred_time_sec": 29.640580300008878
+      },
+      "dt_val": {
+        "accuracy": 0.6022900763358778,
+        "precision_macro": 0.5291777944776264,
+        "recall_macro": 0.5095465731512243,
+        "f1_macro": 0.5079675014200914,
+        "precision_weighted": 0.6194037286811321,
+        "recall_weighted": 0.6022900763358778,
+        "f1_weighted": 0.6030091430890484,
+        "fit_time_sec": 197.18083450000267,
+        "pred_time_sec": 0.03941480000503361
+      },
+      "dt_test": {
+        "accuracy": 0.5755344418052256,
+        "precision_macro": 0.5187165201989643,
+        "recall_macro": 0.4878091677169028,
+        "f1_macro": 0.4947022290913794,
+        "precision_weighted": 0.5980094755888032,
+        "recall_weighted": 0.5755344418052256,
+        "f1_weighted": 0.579587773245586,
+        "fit_time_sec": 197.18083450000267,
+        "pred_time_sec": 0.026306399959139526
+      },
+      "gnb_val": {
+        "accuracy": 0.19083969465648856,
+        "precision_macro": 0.3228642953376433,
+        "recall_macro": 0.20702903900578318,
+        "f1_macro": 0.18171442196681709,
+        "precision_weighted": 0.43738830312753646,
+        "recall_weighted": 0.19083969465648856,
+        "f1_weighted": 0.2062467073114087,
+        "fit_time_sec": 0.6631216000532731,
+        "pred_time_sec": 5.295634799986146
+      },
+      "gnb_test": {
+        "accuracy": 0.17315914489311163,
+        "precision_macro": 0.3038773862343597,
+        "recall_macro": 0.216589207781321,
+        "f1_macro": 0.1925006208189019,
+        "precision_weighted": 0.36521851219979506,
+        "recall_weighted": 0.17315914489311163,
+        "f1_weighted": 0.18805125345245186,
+        "fit_time_sec": 0.6631216000532731,
+        "pred_time_sec": 8.62015109998174
+      }
+    },
+    {
+      "feature": "F3: ROI + CLAHE + HOG (1764)",
+      "dims": 1764,
+      "explained_variance": 1.0,
+      "knn_val": {
+        "accuracy": 0.9230279898218829,
+        "precision_macro": 0.9228594334717475,
+        "recall_macro": 0.897842377260982,
+        "f1_macro": 0.905264988660253,
+        "precision_weighted": 0.9257157476446665,
+        "recall_weighted": 0.9230279898218829,
+        "f1_weighted": 0.9222997525899782,
+        "fit_time_sec": 0.059129999950528145,
+        "pred_time_sec": 10.920948200044222
+      },
+      "knn_test": {
+        "accuracy": 0.8985748218527316,
+        "precision_macro": 0.8919078911369525,
+        "recall_macro": 0.8600390746204701,
+        "f1_macro": 0.8700158748587342,
+        "precision_weighted": 0.9042368090206845,
+        "recall_weighted": 0.8985748218527316,
+        "f1_weighted": 0.8978854757959952,
+        "fit_time_sec": 0.059129999950528145,
+        "pred_time_sec": 16.869287300040014
+      },
+      "dt_val": {
+        "accuracy": 0.7440203562340967,
+        "precision_macro": 0.7060339271379686,
+        "recall_macro": 0.6706358434846807,
+        "f1_macro": 0.6778864990717193,
+        "precision_weighted": 0.7639331475560931,
+        "recall_weighted": 0.7440203562340967,
+        "f1_weighted": 0.7461470249280353,
+        "fit_time_sec": 206.46603869996034,
+        "pred_time_sec": 0.017046699998900294
+      },
+      "dt_test": {
+        "accuracy": 0.7205067300079177,
+        "precision_macro": 0.6813160004642878,
+        "recall_macro": 0.6409395218308261,
+        "f1_macro": 0.6527248424402734,
+        "precision_weighted": 0.7348792773096943,
+        "recall_weighted": 0.7205067300079177,
+        "f1_weighted": 0.7220199548070905,
+        "fit_time_sec": 206.46603869996034,
+        "pred_time_sec": 0.019808000070042908
+      },
+      "gnb_val": {
+        "accuracy": 0.8423664122137404,
+        "precision_macro": 0.8663721756970985,
+        "recall_macro": 0.8439688692014272,
+        "f1_macro": 0.8389133450700338,
+        "precision_weighted": 0.8896400149902965,
+        "recall_weighted": 0.8423664122137404,
+        "f1_weighted": 0.8560629763885768,
+        "fit_time_sec": 0.37346150004304945,
+        "pred_time_sec": 3.116062599932775
+      },
+      "gnb_test": {
+        "accuracy": 0.810055423594616,
+        "precision_macro": 0.8603310469367736,
+        "recall_macro": 0.8020460831906736,
+        "f1_macro": 0.8080042026258115,
+        "precision_weighted": 0.8766772857773372,
+        "recall_weighted": 0.810055423594616,
+        "f1_weighted": 0.8331059864188977,
+        "fit_time_sec": 0.37346150004304945,
+        "pred_time_sec": 5.042571199941449
+      }
+    },
+    {
+      "feature": "F3_PCA: ROI + CLAHE + HOG + PCA (128)",
+      "dims": 128,
+      "explained_variance": 0.6462821364402771,
+      "knn_val": {
+        "accuracy": 0.9206106870229007,
+        "precision_macro": 0.9001855348471502,
+        "recall_macro": 0.8839925556786024,
+        "f1_macro": 0.8898677516704282,
+        "precision_weighted": 0.9205668234019554,
+        "recall_weighted": 0.9206106870229007,
+        "f1_weighted": 0.9196807137850501,
+        "fit_time_sec": 0.014792399946600199,
+        "pred_time_sec": 1.0517406000290066
+      },
+      "knn_test": {
+        "accuracy": 0.9002375296912114,
+        "precision_macro": 0.8898005608864978,
+        "recall_macro": 0.8629441592280317,
+        "f1_macro": 0.8722566994618859,
+        "precision_weighted": 0.9034459710659074,
+        "recall_weighted": 0.9002375296912114,
+        "f1_weighted": 0.8995118401779234,
+        "fit_time_sec": 0.014792399946600199,
+        "pred_time_sec": 1.6050224000355229
+      },
+      "dt_val": {
+        "accuracy": 0.7099236641221374,
+        "precision_macro": 0.65962589922419,
+        "recall_macro": 0.6420398055863172,
+        "f1_macro": 0.6455077207274023,
+        "precision_weighted": 0.7220843406097024,
+        "recall_weighted": 0.7099236641221374,
+        "f1_weighted": 0.7125767843497784,
+        "fit_time_sec": 21.890878900070675,
+        "pred_time_sec": 0.0038614999502897263
+      },
+      "dt_test": {
+        "accuracy": 0.6858273950910531,
+        "precision_macro": 0.6151881174169999,
+        "recall_macro": 0.5840670199833496,
+        "f1_macro": 0.5940928164265828,
+        "precision_weighted": 0.6957962749880658,
+        "recall_weighted": 0.6858273950910531,
+        "f1_weighted": 0.687960876137615,
+        "fit_time_sec": 21.890878900070675,
+        "pred_time_sec": 0.005493000033311546
+      },
+      "gnb_val": {
+        "accuracy": 0.9134860050890585,
+        "precision_macro": 0.905060082329539,
+        "recall_macro": 0.8916380583241049,
+        "f1_macro": 0.8935863079587025,
+        "precision_weighted": 0.9197207726865612,
+        "recall_weighted": 0.9134860050890585,
+        "f1_weighted": 0.9135288560131645,
+        "fit_time_sec": 0.04184339998755604,
+        "pred_time_sec": 0.20993299991823733
+      },
+      "gnb_test": {
+        "accuracy": 0.8836896278701505,
+        "precision_macro": 0.8864689426068746,
+        "recall_macro": 0.8520148449460885,
+        "f1_macro": 0.85473385855034,
+        "precision_weighted": 0.9035580065371218,
+        "recall_weighted": 0.8836896278701505,
+        "f1_weighted": 0.8863486118745649,
+        "fit_time_sec": 0.04184339998755604,
+        "pred_time_sec": 0.32460719998925924
+      }
+    },
+    {
+      "feature": "F4_noCLAHE: ROI + HOG + Color (1860)",
+      "dims": 1860,
+      "explained_variance": 1.0,
+      "knn_val": {
+        "accuracy": 0.9150127226463104,
+        "precision_macro": 0.8932631504202906,
+        "recall_macro": 0.8819016857388952,
+        "f1_macro": 0.884805234491159,
+        "precision_weighted": 0.9146530175053847,
+        "recall_weighted": 0.9150127226463104,
+        "f1_weighted": 0.9131586742506174,
+        "fit_time_sec": 0.08418800006620586,
+        "pred_time_sec": 11.244186300085858
+      },
+      "knn_test": {
+        "accuracy": 0.8842438638163104,
+        "precision_macro": 0.8690862996584435,
+        "recall_macro": 0.8432514148772996,
+        "f1_macro": 0.8504243728671278,
+        "precision_weighted": 0.8894628908875803,
+        "recall_weighted": 0.8842438638163104,
+        "f1_weighted": 0.883405314178127,
+        "fit_time_sec": 0.08418800006620586,
+        "pred_time_sec": 17.2181865000166
+      },
+      "dt_val": {
+        "accuracy": 0.7645038167938931,
+        "precision_macro": 0.7320953544925096,
+        "recall_macro": 0.7011538698166606,
+        "f1_macro": 0.7066064504133842,
+        "precision_weighted": 0.7816950264926394,
+        "recall_weighted": 0.7645038167938931,
+        "f1_weighted": 0.767815505841315,
+        "fit_time_sec": 205.0645451999735,
+        "pred_time_sec": 0.019813099992461503
+      },
+      "dt_test": {
+        "accuracy": 0.7387173396674585,
+        "precision_macro": 0.7002344822926523,
+        "recall_macro": 0.6590162094674227,
+        "f1_macro": 0.6656812566197766,
+        "precision_weighted": 0.762671810101931,
+        "recall_weighted": 0.7387173396674585,
+        "f1_weighted": 0.7435237131316629,
+        "fit_time_sec": 205.0645451999735,
+        "pred_time_sec": 0.019074900075793266
+      },
+      "gnb_val": {
+        "accuracy": 0.8442748091603054,
+        "precision_macro": 0.8458544866394133,
+        "recall_macro": 0.8265519256798326,
+        "f1_macro": 0.8208999307522097,
+        "precision_weighted": 0.8843781314239735,
+        "recall_weighted": 0.8442748091603054,
+        "f1_weighted": 0.8558183661531441,
+        "fit_time_sec": 0.4043531999923289,
+        "pred_time_sec": 3.4824761999771
+      },
+      "gnb_test": {
+        "accuracy": 0.8032462391132225,
+        "precision_macro": 0.8519207267378858,
+        "recall_macro": 0.773884162667277,
+        "f1_macro": 0.7912731450943585,
+        "precision_weighted": 0.8696333070260784,
+        "recall_weighted": 0.8032462391132225,
+        "f1_weighted": 0.8259725203655274,
+        "fit_time_sec": 0.4043531999923289,
+        "pred_time_sec": 5.512309599900618
+      }
+    },
+    {
+      "feature": "F4: ROI + CLAHE + HOG + Color (1860)",
+      "dims": 1860,
+      "explained_variance": 1.0,
+      "knn_val": {
+        "accuracy": 0.9192111959287532,
+        "precision_macro": 0.9082083913429071,
+        "recall_macro": 0.8917657192075796,
+        "f1_macro": 0.8951284159580383,
+        "precision_weighted": 0.9199784166347403,
+        "recall_weighted": 0.9192111959287532,
+        "f1_weighted": 0.917682344720306,
+        "fit_time_sec": 0.07170869992114604,
+        "pred_time_sec": 11.011913800030015
+      },
+      "knn_test": {
+        "accuracy": 0.8934283452098178,
+        "precision_macro": 0.8813131695612566,
+        "recall_macro": 0.8527719029089099,
+        "f1_macro": 0.8602933067983405,
+        "precision_weighted": 0.8983841751374654,
+        "recall_weighted": 0.8934283452098178,
+        "f1_weighted": 0.892363386281601,
+        "fit_time_sec": 0.07170869992114604,
+        "pred_time_sec": 17.088355700019747
+      },
+      "dt_val": {
+        "accuracy": 0.7458015267175573,
+        "precision_macro": 0.6956438252385151,
+        "recall_macro": 0.6720031992125015,
+        "f1_macro": 0.675687197022147,
+        "precision_weighted": 0.7585866251867432,
+        "recall_weighted": 0.7458015267175573,
+        "f1_weighted": 0.7454075319938368,
+        "fit_time_sec": 224.06613409996498,
+        "pred_time_sec": 0.025341900065541267
+      },
+      "dt_test": {
+        "accuracy": 0.7231987331749802,
+        "precision_macro": 0.694151877194494,
+        "recall_macro": 0.6562559243363086,
+        "f1_macro": 0.6684195267059327,
+        "precision_weighted": 0.7386622903192555,
+        "recall_weighted": 0.7231987331749802,
+        "f1_weighted": 0.725611496684435,
+        "fit_time_sec": 224.06613409996498,
+        "pred_time_sec": 0.03505129995755851
+      },
+      "gnb_val": {
+        "accuracy": 0.8522900763358778,
+        "precision_macro": 0.8574002914763899,
+        "recall_macro": 0.837380337147779,
+        "f1_macro": 0.8357274420337476,
+        "precision_weighted": 0.8806714611919355,
+        "recall_weighted": 0.8522900763358778,
+        "f1_weighted": 0.8591813645993558,
+        "fit_time_sec": 0.47667340002954006,
+        "pred_time_sec": 3.4210160999791697
+      },
+      "gnb_test": {
+        "accuracy": 0.8136975455265242,
+        "precision_macro": 0.8619163090064942,
+        "recall_macro": 0.7904238513143974,
+        "f1_macro": 0.804119884309978,
+        "precision_weighted": 0.8694189739356534,
+        "recall_weighted": 0.8136975455265242,
+        "f1_weighted": 0.8321592089263394,
+        "fit_time_sec": 0.47667340002954006,
+        "pred_time_sec": 5.4000244999770075
+      }
+    },
+    {
+      "feature": "F5: ROI + CLAHE + HOG + Color + PCA (128)",
+      "dims": 128,
+      "explained_variance": 0.6473749876022339,
+      "knn_val": {
+        "accuracy": 0.9142493638676845,
+        "precision_macro": 0.8904512390975846,
+        "recall_macro": 0.8756647594438292,
+        "f1_macro": 0.8807359266147953,
+        "precision_weighted": 0.9137922002693601,
+        "recall_weighted": 0.9142493638676845,
+        "f1_weighted": 0.9130763779633088,
+        "fit_time_sec": 0.020997100044041872,
+        "pred_time_sec": 1.1331186998868361
+      },
+      "knn_test": {
+        "accuracy": 0.8918448139350752,
+        "precision_macro": 0.8755227057148339,
+        "recall_macro": 0.8519925326891958,
+        "f1_macro": 0.8604842410999104,
+        "precision_weighted": 0.8932396489052394,
+        "recall_weighted": 0.8918448139350752,
+        "f1_weighted": 0.8907566111946673,
+        "fit_time_sec": 0.020997100044041872,
+        "pred_time_sec": 1.5880957000190392
+      },
+      "dt_val": {
+        "accuracy": 0.6919847328244275,
+        "precision_macro": 0.6157751531477794,
+        "recall_macro": 0.5987117017349576,
+        "f1_macro": 0.6014218614358492,
+        "precision_weighted": 0.6995364650873017,
+        "recall_weighted": 0.6919847328244275,
+        "f1_weighted": 0.6927830154559919,
+        "fit_time_sec": 22.961387500050478,
+        "pred_time_sec": 0.004080199985764921
+      },
+      "dt_test": {
+        "accuracy": 0.680443388756928,
+        "precision_macro": 0.6095413331537647,
+        "recall_macro": 0.5870250530093807,
+        "f1_macro": 0.592854071754439,
+        "precision_weighted": 0.6929783903779526,
+        "recall_weighted": 0.680443388756928,
+        "f1_weighted": 0.6838439226610432,
+        "fit_time_sec": 22.961387500050478,
+        "pred_time_sec": 0.006087100016884506
+      },
+      "gnb_val": {
+        "accuracy": 0.9103053435114504,
+        "precision_macro": 0.8973475835129455,
+        "recall_macro": 0.8780180263319799,
+        "f1_macro": 0.8829697318803437,
+        "precision_weighted": 0.914786928209865,
+        "recall_weighted": 0.9103053435114504,
+        "f1_weighted": 0.9094565964411998,
+        "fit_time_sec": 0.05785340000875294,
+        "pred_time_sec": 0.20741060003638268
+      },
+      "gnb_test": {
+        "accuracy": 0.8820269200316706,
+        "precision_macro": 0.8942256823592302,
+        "recall_macro": 0.845255019294453,
+        "f1_macro": 0.855693612591514,
+        "precision_weighted": 0.9007450597964655,
+        "recall_weighted": 0.8820269200316706,
+        "f1_weighted": 0.8840355733082834,
+        "fit_time_sec": 0.05785340000875294,
+        "pred_time_sec": 0.3316740000154823
+      }
+    }
+  ],
+  "exp2_knn_hyperparams": [
+    {
+      "k": 1,
+      "weights": "uniform",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.8980916030534352,
+        "precision_macro": 0.8745703596047317,
+        "recall_macro": 0.8639774824658545,
+        "f1_macro": 0.8681035516032857,
+        "precision_weighted": 0.8977856918769441,
+        "recall_weighted": 0.8980916030534352,
+        "f1_weighted": 0.8972867082487768,
+        "fit_time_sec": 0.014151699957437813,
+        "pred_time_sec": 1.0401303000980988
+      }
+    },
+    {
+      "k": 1,
+      "weights": "uniform",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.8919847328244275,
+        "precision_macro": 0.8730009394734491,
+        "recall_macro": 0.861229851113572,
+        "f1_macro": 0.865002706895078,
+        "precision_weighted": 0.892876905421752,
+        "recall_weighted": 0.8919847328244275,
+        "f1_weighted": 0.8915516643776661,
+        "fit_time_sec": 0.02191419992595911,
+        "pred_time_sec": 10.146575100021437
+      }
+    },
+    {
+      "k": 1,
+      "weights": "uniform",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.8972010178117048,
+        "precision_macro": 0.8675923806082161,
+        "recall_macro": 0.8590934539190354,
+        "f1_macro": 0.8612913829014037,
+        "precision_weighted": 0.8967268892080568,
+        "recall_weighted": 0.8972010178117048,
+        "f1_weighted": 0.8961219721952313,
+        "fit_time_sec": 0.015379699994809926,
+        "pred_time_sec": 3.336209899978712
+      }
+    },
+    {
+      "k": 1,
+      "weights": "distance",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.8980916030534352,
+        "precision_macro": 0.8745703596047317,
+        "recall_macro": 0.8639774824658545,
+        "f1_macro": 0.8681035516032857,
+        "precision_weighted": 0.8977856918769441,
+        "recall_weighted": 0.8980916030534352,
+        "f1_weighted": 0.8972867082487768,
+        "fit_time_sec": 0.017096699913963675,
+        "pred_time_sec": 1.1217244000872597
+      }
+    },
+    {
+      "k": 1,
+      "weights": "distance",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.8919847328244275,
+        "precision_macro": 0.8730009394734491,
+        "recall_macro": 0.861229851113572,
+        "f1_macro": 0.865002706895078,
+        "precision_weighted": 0.892876905421752,
+        "recall_weighted": 0.8919847328244275,
+        "f1_weighted": 0.8915516643776661,
+        "fit_time_sec": 0.016488099936395884,
+        "pred_time_sec": 10.16266460006591
+      }
+    },
+    {
+      "k": 1,
+      "weights": "distance",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.8972010178117048,
+        "precision_macro": 0.8675923806082161,
+        "recall_macro": 0.8590934539190354,
+        "f1_macro": 0.8612913829014037,
+        "precision_weighted": 0.8967268892080568,
+        "recall_weighted": 0.8972010178117048,
+        "f1_weighted": 0.8961219721952313,
+        "fit_time_sec": 0.02370269992388785,
+        "pred_time_sec": 2.961047300021164
+      }
+    },
+    {
+      "k": 3,
+      "weights": "uniform",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.9049618320610687,
+        "precision_macro": 0.8831000738580916,
+        "recall_macro": 0.8680949304786514,
+        "f1_macro": 0.8733246730989471,
+        "precision_weighted": 0.9049618399283964,
+        "recall_weighted": 0.9049618320610687,
+        "f1_weighted": 0.903428125072538,
+        "fit_time_sec": 0.017637600074522197,
+        "pred_time_sec": 1.0315376999787986
+      }
+    },
+    {
+      "k": 3,
+      "weights": "uniform",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.9040712468193384,
+        "precision_macro": 0.8905755550201917,
+        "recall_macro": 0.8648769533653252,
+        "f1_macro": 0.874915310761672,
+        "precision_weighted": 0.9057881571983029,
+        "recall_weighted": 0.9040712468193384,
+        "f1_weighted": 0.9029916277066721,
+        "fit_time_sec": 0.01677760004531592,
+        "pred_time_sec": 10.081193199963309
+      }
+    },
+    {
+      "k": 3,
+      "weights": "uniform",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.9005089058524173,
+        "precision_macro": 0.8771348023033183,
+        "recall_macro": 0.8635852713178295,
+        "f1_macro": 0.8680004905463178,
+        "precision_weighted": 0.9005201927668415,
+        "recall_weighted": 0.9005089058524173,
+        "f1_weighted": 0.8989102636862273,
+        "fit_time_sec": 0.018531300011090934,
+        "pred_time_sec": 3.0005297999596223
+      }
+    },
+    {
+      "k": 3,
+      "weights": "distance",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.906615776081425,
+        "precision_macro": 0.882582123769951,
+        "recall_macro": 0.8716648209671465,
+        "f1_macro": 0.8754511312703727,
+        "precision_weighted": 0.9058043826034464,
+        "recall_weighted": 0.906615776081425,
+        "f1_weighted": 0.905422292863268,
+        "fit_time_sec": 0.016979399952106178,
+        "pred_time_sec": 1.0469131000572816
+      }
+    },
+    {
+      "k": 3,
+      "weights": "distance",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.9068702290076336,
+        "precision_macro": 0.8866018720390596,
+        "recall_macro": 0.8711729420450353,
+        "f1_macro": 0.8767205833979751,
+        "precision_weighted": 0.9067321279874638,
+        "recall_weighted": 0.9068702290076336,
+        "f1_weighted": 0.9058154309881985,
+        "fit_time_sec": 0.01820749999023974,
+        "pred_time_sec": 10.056565799983218
+      }
+    },
+    {
+      "k": 3,
+      "weights": "distance",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.9041984732824427,
+        "precision_macro": 0.8759702895705066,
+        "recall_macro": 0.8688304417374185,
+        "f1_macro": 0.870828693310222,
+        "precision_weighted": 0.9032559593020398,
+        "recall_weighted": 0.9041984732824427,
+        "f1_weighted": 0.9029470038241969,
+        "fit_time_sec": 0.027939800056628883,
+        "pred_time_sec": 2.891305399942212
+      }
+    },
+    {
+      "k": 5,
+      "weights": "uniform",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.9132315521628499,
+        "precision_macro": 0.8935893893925778,
+        "recall_macro": 0.872288975021533,
+        "f1_macro": 0.8801840653496528,
+        "precision_weighted": 0.9133320956004624,
+        "recall_weighted": 0.9132315521628499,
+        "f1_weighted": 0.9118419247878489,
+        "fit_time_sec": 0.017999400035478175,
+        "pred_time_sec": 0.997296700021252
+      }
+    },
+    {
+      "k": 5,
+      "weights": "uniform",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.9106870229007633,
+        "precision_macro": 0.8928780061238861,
+        "recall_macro": 0.8682007505844713,
+        "f1_macro": 0.8777974030718326,
+        "precision_weighted": 0.9110431218132087,
+        "recall_weighted": 0.9106870229007633,
+        "f1_weighted": 0.9092277573698302,
+        "fit_time_sec": 0.016064199968241155,
+        "pred_time_sec": 10.06039390002843
+      }
+    },
+    {
+      "k": 5,
+      "weights": "uniform",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.9053435114503817,
+        "precision_macro": 0.8829515501132166,
+        "recall_macro": 0.863874123292728,
+        "f1_macro": 0.8708299224662572,
+        "precision_weighted": 0.904860600993669,
+        "recall_weighted": 0.9053435114503817,
+        "f1_weighted": 0.9037527509906668,
+        "fit_time_sec": 0.01958840002771467,
+        "pred_time_sec": 3.0247087000170723
+      }
+    },
+    {
+      "k": 5,
+      "weights": "distance",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.9142493638676845,
+        "precision_macro": 0.8904512390975846,
+        "recall_macro": 0.8756647594438292,
+        "f1_macro": 0.8807359266147953,
+        "precision_weighted": 0.9137922002693601,
+        "recall_weighted": 0.9142493638676845,
+        "f1_weighted": 0.9130763779633088,
+        "fit_time_sec": 0.01804310001898557,
+        "pred_time_sec": 1.0121858000056818
+      }
+    },
+    {
+      "k": 5,
+      "weights": "distance",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.9147582697201018,
+        "precision_macro": 0.8937092767488397,
+        "recall_macro": 0.8752125630614004,
+        "f1_macro": 0.8825123147253315,
+        "precision_weighted": 0.9142033864948785,
+        "recall_weighted": 0.9147582697201018,
+        "f1_weighted": 0.9134728845081238,
+        "fit_time_sec": 0.017432900029234588,
+        "pred_time_sec": 10.009548599948175
+      }
+    },
+    {
+      "k": 5,
+      "weights": "distance",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.9072519083969466,
+        "precision_macro": 0.8830832888739784,
+        "recall_macro": 0.8702783930109513,
+        "f1_macro": 0.8748253819947993,
+        "precision_weighted": 0.9062500019452997,
+        "recall_weighted": 0.9072519083969466,
+        "f1_weighted": 0.9058653921624963,
+        "fit_time_sec": 0.020119399996474385,
+        "pred_time_sec": 3.007526900037192
+      }
+    },
+    {
+      "k": 7,
+      "weights": "uniform",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.9148854961832061,
+        "precision_macro": 0.8959188638392814,
+        "recall_macro": 0.874290943767688,
+        "f1_macro": 0.8823370909133105,
+        "precision_weighted": 0.9147733613351643,
+        "recall_weighted": 0.9148854961832061,
+        "f1_weighted": 0.9134538934341605,
+        "fit_time_sec": 0.017886599991470575,
+        "pred_time_sec": 1.0095705999992788
+      }
+    },
+    {
+      "k": 7,
+      "weights": "uniform",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.9162849872773536,
+        "precision_macro": 0.8993503865693857,
+        "recall_macro": 0.8752866986587915,
+        "f1_macro": 0.8846899207955913,
+        "precision_weighted": 0.9162233962227376,
+        "recall_weighted": 0.9162849872773536,
+        "f1_weighted": 0.9147678461749057,
+        "fit_time_sec": 0.015827400027774274,
+        "pred_time_sec": 10.095189299900085
+      }
+    },
+    {
+      "k": 7,
+      "weights": "uniform",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.9129770992366413,
+        "precision_macro": 0.8846409974219477,
+        "recall_macro": 0.8674507813461301,
+        "f1_macro": 0.8738608335936221,
+        "precision_weighted": 0.9116161422289645,
+        "recall_weighted": 0.9129770992366413,
+        "f1_weighted": 0.9111283720687241,
+        "fit_time_sec": 0.018496599979698658,
+        "pred_time_sec": 2.9386743999784812
+      }
+    },
+    {
+      "k": 7,
+      "weights": "distance",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.9180661577608142,
+        "precision_macro": 0.8957892671300199,
+        "recall_macro": 0.8798883351790328,
+        "f1_macro": 0.8853937198395303,
+        "precision_weighted": 0.9178619277553612,
+        "recall_weighted": 0.9180661577608142,
+        "f1_weighted": 0.9169598392570979,
+        "fit_time_sec": 0.018330899998545647,
+        "pred_time_sec": 0.9650762000819668
+      }
+    },
+    {
+      "k": 7,
+      "weights": "distance",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.9187022900763359,
+        "precision_macro": 0.9000017991119761,
+        "recall_macro": 0.8793921496247077,
+        "f1_macro": 0.8875380073089395,
+        "precision_weighted": 0.9181134107612761,
+        "recall_weighted": 0.9187022900763359,
+        "f1_weighted": 0.9173579568295375,
+        "fit_time_sec": 0.018093900056555867,
+        "pred_time_sec": 10.051509200013243
+      }
+    },
+    {
+      "k": 7,
+      "weights": "distance",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.9146310432569974,
+        "precision_macro": 0.8860643266176061,
+        "recall_macro": 0.8740119355235635,
+        "f1_macro": 0.8782830663682999,
+        "precision_weighted": 0.9128620504173712,
+        "recall_weighted": 0.9146310432569974,
+        "f1_weighted": 0.9129747688027292,
+        "fit_time_sec": 0.019032099982723594,
+        "pred_time_sec": 2.9369328999891877
+      }
+    },
+    {
+      "k": 11,
+      "weights": "uniform",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.9208651399491095,
+        "precision_macro": 0.9016700256088658,
+        "recall_macro": 0.8785649686231082,
+        "f1_macro": 0.8869939111894791,
+        "precision_weighted": 0.9207481565587394,
+        "recall_weighted": 0.9208651399491095,
+        "f1_weighted": 0.9193163073142698,
+        "fit_time_sec": 0.01944129995536059,
+        "pred_time_sec": 1.1022130000637844
+      }
+    },
+    {
+      "k": 11,
+      "weights": "uniform",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.9185750636132316,
+        "precision_macro": 0.901414615798103,
+        "recall_macro": 0.8748812599975391,
+        "f1_macro": 0.8850217809397545,
+        "precision_weighted": 0.9183872304785234,
+        "recall_weighted": 0.9185750636132316,
+        "f1_weighted": 0.916931779830532,
+        "fit_time_sec": 0.01611219998449087,
+        "pred_time_sec": 10.392952300026082
+      }
+    },
+    {
+      "k": 11,
+      "weights": "uniform",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.9165394402035624,
+        "precision_macro": 0.8916305513959158,
+        "recall_macro": 0.8709234649932326,
+        "f1_macro": 0.8784371580820356,
+        "precision_weighted": 0.9158071844478192,
+        "recall_weighted": 0.9165394402035624,
+        "f1_weighted": 0.9147307337259497,
+        "fit_time_sec": 0.017225999967195094,
+        "pred_time_sec": 2.9441716000437737
+      }
+    },
+    {
+      "k": 11,
+      "weights": "distance",
+      "metric": "euclidean",
+      "group_val": {
+        "accuracy": 0.9223918575063613,
+        "precision_macro": 0.9011967495207706,
+        "recall_macro": 0.882994339854805,
+        "f1_macro": 0.8893674945751343,
+        "precision_weighted": 0.9218791953767146,
+        "recall_weighted": 0.9223918575063613,
+        "f1_weighted": 0.9210563669931153,
+        "fit_time_sec": 0.018674499937333167,
+        "pred_time_sec": 1.0790005000308156
+      }
+    },
+    {
+      "k": 11,
+      "weights": "distance",
+      "metric": "manhattan",
+      "group_val": {
+        "accuracy": 0.9218829516539441,
+        "precision_macro": 0.9039144264314857,
+        "recall_macro": 0.880506029285099,
+        "f1_macro": 0.8892001313093331,
+        "precision_weighted": 0.9216921201387787,
+        "recall_weighted": 0.9218829516539441,
+        "f1_weighted": 0.9205026706389003,
+        "fit_time_sec": 0.025614500045776367,
+        "pred_time_sec": 10.191333099966869
+      }
+    },
+    {
+      "k": 11,
+      "weights": "distance",
+      "metric": "cosine",
+      "group_val": {
+        "accuracy": 0.9194656488549618,
+        "precision_macro": 0.8922066562420404,
+        "recall_macro": 0.8766128337639967,
+        "f1_macro": 0.8823499509930982,
+        "precision_weighted": 0.9180566873762347,
+        "recall_weighted": 0.9194656488549618,
+        "f1_weighted": 0.9177819865967524,
+        "fit_time_sec": 0.01960879995021969,
+        "pred_time_sec": 3.0419718000339344
+      }
+    }
+  ],
+  "exp3_dt_hyperparams": [
+    {
+      "criterion": "gini",
+      "max_depth": 5,
+      "train_accuracy": 0.29136495581996236,
+      "group_val": {
+        "accuracy": 0.2998727735368957,
+        "precision_macro": 0.159405601557863,
+        "recall_macro": 0.1606856773717239,
+        "f1_macro": 0.13202195344572334,
+        "precision_weighted": 0.2863409623660891,
+        "recall_weighted": 0.2998727735368957,
+        "f1_weighted": 0.2344862197258596,
+        "fit_time_sec": 7.430959600023925,
+        "pred_time_sec": 0.0031075000297278166
+      }
+    },
+    {
+      "criterion": "gini",
+      "max_depth": 10,
+      "train_accuracy": 0.6173083670930493,
+      "group_val": {
+        "accuracy": 0.5796437659033079,
+        "precision_macro": 0.4488579301459796,
+        "recall_macro": 0.422995262704565,
+        "f1_macro": 0.40277852453681123,
+        "precision_weighted": 0.5840335060752284,
+        "recall_weighted": 0.5796437659033079,
+        "f1_weighted": 0.5595711206218574,
+        "fit_time_sec": 13.752961400081404,
+        "pred_time_sec": 0.003414199920371175
+      }
+    },
+    {
+      "criterion": "gini",
+      "max_depth": 15,
+      "train_accuracy": 0.8437908705221857,
+      "group_val": {
+        "accuracy": 0.6740458015267176,
+        "precision_macro": 0.6203361279965064,
+        "recall_macro": 0.5650787498461917,
+        "f1_macro": 0.5764075468317883,
+        "precision_weighted": 0.6914522664042048,
+        "recall_weighted": 0.6740458015267176,
+        "f1_weighted": 0.6744259502666742,
+        "fit_time_sec": 18.458724200027063,
+        "pred_time_sec": 0.004040600033476949
+      }
+    },
+    {
+      "criterion": "gini",
+      "max_depth": 20,
+      "train_accuracy": 0.9664423107595138,
+      "group_val": {
+        "accuracy": 0.6919847328244275,
+        "precision_macro": 0.6157751531477794,
+        "recall_macro": 0.5987117017349576,
+        "f1_macro": 0.6014218614358492,
+        "precision_weighted": 0.6995364650873017,
+        "recall_weighted": 0.6919847328244275,
+        "f1_weighted": 0.6927830154559919,
+        "fit_time_sec": 20.89519259997178,
+        "pred_time_sec": 0.004236100008711219
+      }
+    },
+    {
+      "criterion": "gini",
+      "max_depth": 30,
+      "train_accuracy": 0.9997129095026954,
+      "group_val": {
+        "accuracy": 0.6885496183206107,
+        "precision_macro": 0.6120486824647824,
+        "recall_macro": 0.5947468315491571,
+        "f1_macro": 0.599114239373403,
+        "precision_weighted": 0.693543806288618,
+        "recall_weighted": 0.6885496183206107,
+        "f1_weighted": 0.6889652340525132,
+        "fit_time_sec": 22.74225839995779,
+        "pred_time_sec": 0.004179400042630732
+      }
+    },
+    {
+      "criterion": "gini",
+      "max_depth": null,
+      "train_accuracy": 1.0,
+      "group_val": {
+        "accuracy": 0.6866412213740458,
+        "precision_macro": 0.6062864208376474,
+        "recall_macro": 0.597999261720192,
+        "f1_macro": 0.5977292213054707,
+        "precision_weighted": 0.6902108855987809,
+        "recall_weighted": 0.6866412213740458,
+        "f1_weighted": 0.6860234458327361,
+        "fit_time_sec": 22.762817099923268,
+        "pred_time_sec": 0.004147700034081936
+      }
+    },
+    {
+      "criterion": "entropy",
+      "max_depth": 5,
+      "train_accuracy": 0.510287409486746,
+      "group_val": {
+        "accuracy": 0.4861323155216285,
+        "precision_macro": 0.2917876464541209,
+        "recall_macro": 0.34288667404946477,
+        "f1_macro": 0.2948381527164166,
+        "precision_weighted": 0.43400650123920004,
+        "recall_weighted": 0.4861323155216285,
+        "f1_weighted": 0.43729548416566627,
+        "fit_time_sec": 32.30402550008148,
+        "pred_time_sec": 0.003251299960538745
+      }
+    },
+    {
+      "criterion": "entropy",
+      "max_depth": 10,
+      "train_accuracy": 0.8025455357427669,
+      "group_val": {
+        "accuracy": 0.6852417302798982,
+        "precision_macro": 0.6355377453214657,
+        "recall_macro": 0.6002313276731882,
+        "f1_macro": 0.6075433646941119,
+        "precision_weighted": 0.7002820690931326,
+        "recall_weighted": 0.6852417302798982,
+        "f1_weighted": 0.6869506802104772,
+        "fit_time_sec": 47.03282770002261,
+        "pred_time_sec": 0.003701400011777878
+      }
+    },
+    {
+      "criterion": "entropy",
+      "max_depth": 15,
+      "train_accuracy": 0.9839867300392356,
+      "group_val": {
+        "accuracy": 0.7012722646310433,
+        "precision_macro": 0.6323267962395418,
+        "recall_macro": 0.6268306263073705,
+        "f1_macro": 0.6243290736037259,
+        "precision_weighted": 0.7091612095353165,
+        "recall_weighted": 0.7012722646310433,
+        "f1_weighted": 0.7023396947651044,
+        "fit_time_sec": 51.87645710003562,
+        "pred_time_sec": 0.004835000028833747
+      }
+    },
+    {
+      "criterion": "entropy",
+      "max_depth": 20,
+      "train_accuracy": 1.0,
+      "group_val": {
+        "accuracy": 0.6979643765903308,
+        "precision_macro": 0.6262969286204496,
+        "recall_macro": 0.6224480127968499,
+        "f1_macro": 0.6201607595368706,
+        "precision_weighted": 0.7080701197497764,
+        "recall_weighted": 0.6979643765903308,
+        "f1_weighted": 0.7001583595912552,
+        "fit_time_sec": 51.02646179997828,
+        "pred_time_sec": 0.004005499999038875
+      }
+    },
+    {
+      "criterion": "entropy",
+      "max_depth": 30,
+      "train_accuracy": 1.0,
+      "group_val": {
+        "accuracy": 0.6979643765903308,
+        "precision_macro": 0.6262969286204496,
+        "recall_macro": 0.6224480127968499,
+        "f1_macro": 0.6201607595368706,
+        "precision_weighted": 0.7080701197497764,
+        "recall_weighted": 0.6979643765903308,
+        "f1_weighted": 0.7001583595912552,
+        "fit_time_sec": 51.3781447999645,
+        "pred_time_sec": 0.003895799978636205
+      }
+    },
+    {
+      "criterion": "entropy",
+      "max_depth": null,
+      "train_accuracy": 1.0,
+      "group_val": {
+        "accuracy": 0.6979643765903308,
+        "precision_macro": 0.6262969286204496,
+        "recall_macro": 0.6224480127968499,
+        "f1_macro": 0.6201607595368706,
+        "precision_weighted": 0.7080701197497764,
+        "recall_weighted": 0.6979643765903308,
+        "f1_weighted": 0.7001583595912552,
+        "fit_time_sec": 50.74080520006828,
+        "pred_time_sec": 0.004099000012502074
+      }
+    }
+  ],
+  "exp4_pca_dims": [
+    {
+      "dims": 32,
+      "explained_variance": 0.4587283432483673,
+      "group_val": {
+        "accuracy": 0.8600508905852418,
+        "precision_macro": 0.8197934366202667,
+        "recall_macro": 0.7945441122185308,
+        "f1_macro": 0.8021730420269316,
+        "precision_weighted": 0.8588512167910092,
+        "recall_weighted": 0.8600508905852418,
+        "f1_weighted": 0.8576141459431561,
+        "fit_time_sec": 0.004804600030183792,
+        "pred_time_sec": 3.230102999950759
+      }
+    },
+    {
+      "dims": 64,
+      "explained_variance": 0.5427899360656738,
+      "group_val": {
+        "accuracy": 0.9002544529262086,
+        "precision_macro": 0.8696001208912045,
+        "recall_macro": 0.8533244124523195,
+        "f1_macro": 0.8586244525623307,
+        "precision_weighted": 0.8989226819880448,
+        "recall_weighted": 0.9002544529262086,
+        "f1_weighted": 0.8982855206310266,
+        "fit_time_sec": 0.012370300013571978,
+        "pred_time_sec": 3.0765982000157237
+      }
+    },
+    {
+      "dims": 128,
+      "explained_variance": 0.6473749876022339,
+      "group_val": {
+        "accuracy": 0.9194656488549618,
+        "precision_macro": 0.8922066562420404,
+        "recall_macro": 0.8766128337639967,
+        "f1_macro": 0.8823499509930982,
+        "precision_weighted": 0.9180566873762347,
+        "recall_weighted": 0.9194656488549618,
+        "f1_weighted": 0.9177819865967524,
+        "fit_time_sec": 0.01898110006004572,
+        "pred_time_sec": 3.026302099926397
+      }
+    },
+    {
+      "dims": 256,
+      "explained_variance": 0.7869992256164551,
+      "group_val": {
+        "accuracy": 0.9241730279898219,
+        "precision_macro": 0.9003951608174556,
+        "recall_macro": 0.8858770148886428,
+        "f1_macro": 0.8910569940424499,
+        "precision_weighted": 0.9225899957891309,
+        "recall_weighted": 0.9241730279898219,
+        "f1_weighted": 0.9223241986400937,
+        "fit_time_sec": 0.031041699927300215,
+        "pred_time_sec": 3.2174554000375792
+      }
+    },
+    {
+      "dims": 512,
+      "explained_variance": 0.9533720016479492,
+      "group_val": {
+        "accuracy": 0.9194656488549618,
+        "precision_macro": 0.8978545447333877,
+        "recall_macro": 0.8835154423526516,
+        "f1_macro": 0.8877683512073573,
+        "precision_weighted": 0.9176836722886734,
+        "recall_weighted": 0.9194656488549618,
+        "f1_weighted": 0.9168451871890634,
+        "fit_time_sec": 0.06973890005610883,
+        "pred_time_sec": 3.613232999923639
+      }
+    },
+    {
+      "dims": 1860,
+      "explained_variance": 1.0,
+      "group_val": {
+        "accuracy": 0.9195928753180661,
+        "precision_macro": 0.8991403099111449,
+        "recall_macro": 0.886525163036791,
+        "f1_macro": 0.8900850770894714,
+        "precision_weighted": 0.9182738977735766,
+        "recall_weighted": 0.9195928753180661,
+        "f1_weighted": 0.917278766431564,
+        "fit_time_sec": 0.07733270002063364,
+        "pred_time_sec": 6.27309269993566
+      }
+    }
+  ],
+  "exp5_models_comparison": [
+    {
+      "model": "Baseline K-NN (k=5, Raw Gray F1)",
+      "scope": "Bắt buộc (Baseline)",
+      "group_val": {
+        "accuracy": 0.5083969465648855,
+        "precision_macro": 0.4495055271967022,
+        "recall_macro": 0.42625907468930735,
+        "f1_macro": 0.4269597169323969,
+        "precision_weighted": 0.5347903787301516,
+        "recall_weighted": 0.5083969465648855,
+        "f1_weighted": 0.5109206086214727,
+        "fit_time_sec": 0.06631369993556291,
+        "pred_time_sec": 6.427108000032604
+      },
+      "test": {
+        "accuracy": 0.5058590657165479,
+        "precision_macro": 0.4724696567126167,
+        "recall_macro": 0.42362583108386953,
+        "f1_macro": 0.43760826601562325,
+        "precision_weighted": 0.530600462679073,
+        "recall_weighted": 0.5058590657165479,
+        "f1_weighted": 0.5103326362614377,
+        "fit_time_sec": 0.06631369993556291,
+        "pred_time_sec": 9.75298530003056
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.49730799683293747,
+          0.5146476642913698
+        ],
+        "accuracy_halfwidth": 0.008669833729216148,
+        "f1_macro_ci95": [
+          0.4266692013570696,
+          0.4463524846403178
+        ],
+        "f1_macro_halfwidth": 0.0098416416416241
+      }
+    },
+    {
+      "model": "Baseline Decision Tree (Raw Gray F1)",
+      "scope": "Bắt buộc (Baseline)",
+      "group_val": {
+        "accuracy": 0.5908396946564886,
+        "precision_macro": 0.5208364106692017,
+        "recall_macro": 0.4891737418481605,
+        "f1_macro": 0.49472188473714274,
+        "precision_weighted": 0.6054487105620912,
+        "recall_weighted": 0.5908396946564886,
+        "f1_weighted": 0.5905507506509156,
+        "fit_time_sec": 66.58069289999548,
+        "pred_time_sec": 0.018390099983662367
+      },
+      "test": {
+        "accuracy": 0.5647664291369755,
+        "precision_macro": 0.486840784397713,
+        "recall_macro": 0.46373212937495034,
+        "f1_macro": 0.47072656172624744,
+        "precision_weighted": 0.567624295466569,
+        "recall_weighted": 0.5647664291369755,
+        "f1_weighted": 0.5628325958192862,
+        "fit_time_sec": 66.58069289999548,
+        "pred_time_sec": 0.017532599973492324
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.5567676167854315,
+          0.5734778305621536
+        ],
+        "accuracy_halfwidth": 0.008355106888361052,
+        "f1_macro_ci95": [
+          0.45987219871164947,
+          0.48068448277226533
+        ],
+        "f1_macro_halfwidth": 0.01040614203030793
+      }
+    },
+    {
+      "model": "Gaussian Naive Bayes (Raw Gray F1)",
+      "scope": "Bắt buộc (Baseline)",
+      "group_val": {
+        "accuracy": 0.1494910941475827,
+        "precision_macro": 0.28797021143039553,
+        "recall_macro": 0.16651378122308355,
+        "f1_macro": 0.13721877954829512,
+        "precision_weighted": 0.37195020727145967,
+        "recall_weighted": 0.1494910941475827,
+        "f1_weighted": 0.16059611309855026,
+        "fit_time_sec": 0.22921450005378574,
+        "pred_time_sec": 1.6946542999939993
+      },
+      "test": {
+        "accuracy": 0.14180522565320666,
+        "precision_macro": 0.26320592621840305,
+        "recall_macro": 0.1821646723029433,
+        "f1_macro": 0.15229252678125513,
+        "precision_weighted": 0.3028513179538644,
+        "recall_weighted": 0.14180522565320666,
+        "f1_weighted": 0.14740682963060137,
+        "fit_time_sec": 0.22921450005378574,
+        "pred_time_sec": 2.8544264000374824
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.1360253365003959,
+          0.14766825019794141
+        ],
+        "accuracy_halfwidth": 0.005821456848772763,
+        "f1_macro_ci95": [
+          0.14441423351626675,
+          0.1587547079377403
+        ],
+        "f1_macro_halfwidth": 0.007170237210736771
+      }
+    },
+    {
+      "model": "K-NN F3_PCA (11, euclidean)",
+      "scope": "Bắt buộc (Học phần)",
+      "group_val": {
+        "accuracy": 0.9278625954198473,
+        "precision_macro": 0.9070108519493174,
+        "recall_macro": 0.887535068290882,
+        "f1_macro": 0.894525355549868,
+        "precision_weighted": 0.9272766053596435,
+        "recall_weighted": 0.9278625954198473,
+        "f1_weighted": 0.9265072353977705,
+        "fit_time_sec": 0.014786300016567111,
+        "pred_time_sec": 1.0309676999459043
+      },
+      "test": {
+        "accuracy": 0.9045130641330166,
+        "precision_macro": 0.8958733908697097,
+        "recall_macro": 0.8633132041066823,
+        "f1_macro": 0.8748059604419863,
+        "precision_weighted": 0.9077226243306806,
+        "recall_weighted": 0.9045130641330166,
+        "f1_weighted": 0.9033915056259971,
+        "fit_time_sec": 0.014786300016567111,
+        "pred_time_sec": 1.6563819999573752
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.8996041171813143,
+          0.9095011876484561
+        ],
+        "accuracy_halfwidth": 0.0049485352335709165,
+        "f1_macro_ci95": [
+          0.8661848606587513,
+          0.8822245278972737
+        ],
+        "f1_macro_halfwidth": 0.008019833619261174
+      }
+    },
+    {
+      "model": "K-NN tối ưu F5 (k=11, euclidean)",
+      "scope": "Bắt buộc (Học phần)",
+      "group_val": {
+        "accuracy": 0.9223918575063613,
+        "precision_macro": 0.9011967495207706,
+        "recall_macro": 0.882994339854805,
+        "f1_macro": 0.8893674945751343,
+        "precision_weighted": 0.9218791953767146,
+        "recall_weighted": 0.9223918575063613,
+        "f1_weighted": 0.9210563669931153,
+        "fit_time_sec": 0.01582980004604906,
+        "pred_time_sec": 1.0912884999997914
+      },
+      "test": {
+        "accuracy": 0.8978622327790974,
+        "precision_macro": 0.8836957555560075,
+        "recall_macro": 0.8543308899186046,
+        "f1_macro": 0.8649773508409762,
+        "precision_weighted": 0.89961770503887,
+        "recall_weighted": 0.8978622327790974,
+        "f1_weighted": 0.896445979306615,
+        "fit_time_sec": 0.01582980004604906,
+        "pred_time_sec": 1.7235258999280632
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.8924782264449723,
+          0.9031670625494853
+        ],
+        "accuracy_halfwidth": 0.005344418052256494,
+        "f1_macro_ci95": [
+          0.855760215666953,
+          0.8726916452840294
+        ],
+        "f1_macro_halfwidth": 0.008465714808538194
+      }
+    },
+    {
+      "model": "K-NN F5 (11, manhattan đối chứng)",
+      "scope": "Bắt buộc (Học phần)",
+      "group_val": {
+        "accuracy": 0.9218829516539441,
+        "precision_macro": 0.9039144264314857,
+        "recall_macro": 0.880506029285099,
+        "f1_macro": 0.8892001313093331,
+        "precision_weighted": 0.9216921201387787,
+        "recall_weighted": 0.9218829516539441,
+        "f1_weighted": 0.9205026706389003,
+        "fit_time_sec": 0.0074093000730499625,
+        "pred_time_sec": 10.109263299964368
+      },
+      "test": {
+        "accuracy": 0.8995249406175772,
+        "precision_macro": 0.8944316965815351,
+        "recall_macro": 0.8551088516022792,
+        "f1_macro": 0.8697435752748967,
+        "precision_weighted": 0.9028789940214927,
+        "recall_weighted": 0.8995249406175772,
+        "f1_weighted": 0.8986086106590104,
+        "fit_time_sec": 0.0074093000730499625,
+        "pred_time_sec": 12.013410700019449
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.8939014251781473,
+          0.9046753760886778
+        ],
+        "accuracy_halfwidth": 0.0053869754552652305,
+        "f1_macro_ci95": [
+          0.8604463233446017,
+          0.8777710121174787
+        ],
+        "f1_macro_halfwidth": 0.00866234438643848
+      }
+    },
+    {
+      "model": "K-NN F4 không PCA (k=11, euclidean)",
+      "scope": "Bắt buộc (Học phần)",
+      "group_val": {
+        "accuracy": 0.9258269720101782,
+        "precision_macro": 0.9064113369760055,
+        "recall_macro": 0.8924895410360526,
+        "f1_macro": 0.8970899026496596,
+        "precision_weighted": 0.9254898878004586,
+        "recall_weighted": 0.9258269720101782,
+        "f1_weighted": 0.9240294005364444,
+        "fit_time_sec": 0.08905079995747656,
+        "pred_time_sec": 11.261128699989058
+      },
+      "test": {
+        "accuracy": 0.8980997624703088,
+        "precision_macro": 0.8910697256200448,
+        "recall_macro": 0.8547955685197849,
+        "f1_macro": 0.8659997893280559,
+        "precision_weighted": 0.9040610587535245,
+        "recall_weighted": 0.8980997624703088,
+        "f1_weighted": 0.897207273872481,
+        "fit_time_sec": 0.08905079995747656,
+        "pred_time_sec": 18.05652610003017
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.8930324623911322,
+          0.9036421219319082
+        ],
+        "accuracy_halfwidth": 0.0053048297703879865,
+        "f1_macro_ci95": [
+          0.8581711610634735,
+          0.8735954480966646
+        ],
+        "f1_macro_halfwidth": 0.007712143516595549
+      }
+    },
+    {
+      "model": "Decision Tree F5 (depth=15, entropy)",
+      "scope": "Bắt buộc (Học phần)",
+      "group_val": {
+        "accuracy": 0.7012722646310433,
+        "precision_macro": 0.6323267962395418,
+        "recall_macro": 0.6268306263073705,
+        "f1_macro": 0.6243290736037259,
+        "precision_weighted": 0.7091612095353165,
+        "recall_weighted": 0.7012722646310433,
+        "f1_weighted": 0.7023396947651044,
+        "fit_time_sec": 51.07784200005699,
+        "pred_time_sec": 0.004894199897535145
+      },
+      "test": {
+        "accuracy": 0.6906571654790182,
+        "precision_macro": 0.6063035244985572,
+        "recall_macro": 0.5913306648132229,
+        "f1_macro": 0.5944503852139041,
+        "precision_weighted": 0.6953545531227255,
+        "recall_weighted": 0.6906571654790182,
+        "f1_weighted": 0.6908041058040758,
+        "fit_time_sec": 51.07784200005699,
+        "pred_time_sec": 0.007192300050519407
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.6827395091053048,
+          0.6982600950118765
+        ],
+        "accuracy_halfwidth": 0.007760292953285841,
+        "f1_macro_ci95": [
+          0.582487930654103,
+          0.6041205766935509
+        ],
+        "f1_macro_halfwidth": 0.010816323019723961
+      }
+    },
+    {
+      "model": "Gaussian Naive Bayes (F5)",
+      "scope": "Bắt buộc (Học phần)",
+      "group_val": {
+        "accuracy": 0.9103053435114504,
+        "precision_macro": 0.8973475835129455,
+        "recall_macro": 0.8780180263319799,
+        "f1_macro": 0.8829697318803437,
+        "precision_weighted": 0.914786928209865,
+        "recall_weighted": 0.9103053435114504,
+        "f1_weighted": 0.9094565964411998,
+        "fit_time_sec": 0.04375579999759793,
+        "pred_time_sec": 0.20283820002805442
+      },
+      "test": {
+        "accuracy": 0.8820269200316706,
+        "precision_macro": 0.8942256823592302,
+        "recall_macro": 0.845255019294453,
+        "f1_macro": 0.855693612591514,
+        "precision_weighted": 0.9007450597964655,
+        "recall_weighted": 0.8820269200316706,
+        "f1_weighted": 0.8840355733082834,
+        "fit_time_sec": 0.04375579999759793,
+        "pred_time_sec": 0.34773120004683733
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.8762430720506731,
+          0.8878859857482185
+        ],
+        "accuracy_halfwidth": 0.005821456848772721,
+        "f1_macro_ci95": [
+          0.8473413725844131,
+          0.8631604657702708
+        ],
+        "f1_macro_halfwidth": 0.007909546592928862
+      }
+    },
+    {
+      "model": "Random Forest (200 trees, F5)",
+      "scope": "Mở rộng (Điểm thưởng)",
+      "group_val": {
+        "accuracy": 0.8979643765903308,
+        "precision_macro": 0.9071633491881904,
+        "recall_macro": 0.8069902793158608,
+        "f1_macro": 0.8281351079170979,
+        "precision_weighted": 0.9038117405831065,
+        "recall_weighted": 0.8979643765903308,
+        "f1_weighted": 0.8909066022597939,
+        "fit_time_sec": 26.944647500058636,
+        "pred_time_sec": 0.20754980004858226
+      },
+      "test": {
+        "accuracy": 0.8772763262074426,
+        "precision_macro": 0.9004258741179244,
+        "recall_macro": 0.7871596227705936,
+        "f1_macro": 0.8179216183429615,
+        "precision_weighted": 0.8865051258138629,
+        "recall_weighted": 0.8772763262074426,
+        "f1_weighted": 0.8716251279962169,
+        "fit_time_sec": 26.944647500058636,
+        "pred_time_sec": 0.3041386000113562
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.871811163895487,
+          0.8830601741884402
+        ],
+        "accuracy_halfwidth": 0.0056245051464766105,
+        "f1_macro_ci95": [
+          0.8081797686643866,
+          0.8271556413258093
+        ],
+        "f1_macro_halfwidth": 0.009487936330711377
+      }
+    },
+    {
+      "model": "MLP Neural Network (F5)",
+      "scope": "Mở rộng (Điểm thưởng)",
+      "group_val": {
+        "accuracy": 0.9473282442748091,
+        "precision_macro": 0.9352808327984459,
+        "recall_macro": 0.9250024609326936,
+        "f1_macro": 0.9282711689499282,
+        "precision_weighted": 0.9490872935472542,
+        "recall_weighted": 0.9473282442748091,
+        "f1_weighted": 0.9472164163798512,
+        "fit_time_sec": 17.162296500056982,
+        "pred_time_sec": 0.018233699956908822
+      },
+      "test": {
+        "accuracy": 0.9277117973079968,
+        "precision_macro": 0.9207562559005097,
+        "recall_macro": 0.8864455402478659,
+        "f1_macro": 0.8995995404131396,
+        "precision_weighted": 0.9296227880553732,
+        "recall_weighted": 0.9277117973079968,
+        "f1_weighted": 0.9268659296997834,
+        "fit_time_sec": 17.162296500056982,
+        "pred_time_sec": 0.02443039999343455
+      },
+      "bootstrap_ci": {
+        "n_boot": 1000,
+        "accuracy_ci95": [
+          0.9230384006334126,
+          0.9321456848772763
+        ],
+        "accuracy_halfwidth": 0.004553642121931878,
+        "f1_macro_ci95": [
+          0.8910121372956235,
+          0.9059211915979959
+        ],
+        "f1_macro_halfwidth": 0.007454527151186219
+      }
+    }
+  ],
+  "mcnemar_tests": {
+    "F3_vs_F4_knn5": {
+      "n01_b_better": 228,
+      "n10_a_better": 293,
+      "chi2": 7.861804222648752,
+      "p_value": 0.005048998549047428
+    },
+    "F4noCLAHE_vs_F4_knn5": {
+      "n01_b_better": 466,
+      "n10_a_better": 350,
+      "chi2": 16.207107843137255,
+      "p_value": 5.6780671229793666e-05
+    },
+    "F3PCA_vs_F5_knn_opt": {
+      "n01_b_better": 236,
+      "n10_a_better": 320,
+      "chi2": 12.390287769784173,
+      "p_value": 0.0004315727373484839
+    },
+    "GNB_F5_vs_KNN_F5": {
+      "n01_b_better": 716,
+      "n10_a_better": 516,
+      "chi2": 32.14366883116883,
+      "p_value": 1.4318252476665591e-08
+    },
+    "KNN_F5_vs_MLP_F5": {
+      "n01_b_better": 698,
+      "n10_a_better": 321,
+      "chi2": 138.73994111874387,
+      "p_value": 5.020744306505305e-32
+    },
+    "RF_F5_vs_MLP_F5": {
+      "n01_b_better": 873,
+      "n10_a_better": 236,
+      "chi2": 364.7394048692516,
+      "p_value": 2.61583677001302e-81
+    }
+  },
+  "top_confused_pairs_knn_f5": [
+    {
+      "class_a_id": 8,
+      "class_a_name": "120 km/h",
+      "class_b_id": 7,
+      "class_b_name": "100 km/h",
+      "count_a_to_b": 53,
+      "count_b_to_a": 42,
+      "total_count": 95
+    },
+    {
+      "class_a_id": 1,
+      "class_a_name": "30 km/h",
+      "class_b_id": 5,
+      "class_b_name": "80 km/h",
+      "count_a_to_b": 47,
+      "count_b_to_a": 33,
+      "total_count": 80
+    },
+    {
+      "class_a_id": 5,
+      "class_a_name": "80 km/h",
+      "class_b_id": 2,
+      "class_b_name": "50 km/h",
+      "count_a_to_b": 40,
+      "count_b_to_a": 22,
+      "total_count": 62
+    },
+    {
+      "class_a_id": 26,
+      "class_a_name": "Đèn tín hiệu",
+      "class_b_id": 18,
+      "class_b_name": "Nguy hiểm khác",
+      "count_a_to_b": 26,
+      "count_b_to_a": 23,
+      "total_count": 49
+    },
+    {
+      "class_a_id": 1,
+      "class_a_name": "30 km/h",
+      "class_b_id": 2,
+      "class_b_name": "50 km/h",
+      "count_a_to_b": 32,
+      "count_b_to_a": 11,
+      "total_count": 43
+    },
+    {
+      "class_a_id": 3,
+      "class_a_name": "60 km/h",
+      "class_b_id": 5,
+      "class_b_name": "80 km/h",
+      "count_a_to_b": 40,
+      "count_b_to_a": 3,
+      "total_count": 43
+    },
+    {
+      "class_a_id": 18,
+      "class_a_name": "Nguy hiểm khác",
+      "class_b_id": 25,
+      "class_b_name": "Công trường",
+      "count_a_to_b": 39,
+      "count_b_to_a": 3,
+      "total_count": 42
+    },
+    {
+      "class_a_id": 23,
+      "class_a_name": "Đường trơn",
+      "class_b_id": 31,
+      "class_b_name": "Động vật",
+      "count_a_to_b": 35,
+      "count_b_to_a": 4,
+      "total_count": 39
+    },
+    {
+      "class_a_id": 30,
+      "class_a_name": "Băng tuyết",
+      "class_b_id": 23,
+      "class_b_name": "Đường trơn",
+      "count_a_to_b": 28,
+      "count_b_to_a": 8,
+      "total_count": 36
+    },
+    {
+      "class_a_id": 26,
+      "class_a_name": "Đèn tín hiệu",
+      "class_b_id": 25,
+      "class_b_name": "Công trường",
+      "count_a_to_b": 25,
+      "count_b_to_a": 7,
+      "total_count": 32
+    }
+  ],
+  "per_class_knn_f5": [
+    {
+      "class_id": 0,
+      "name_vi": "Giới hạn tốc độ 20 km/h",
+      "name_en": "Speed limit (20km/h)",
+      "support": 60,
+      "precision": 1.0,
+      "recall": 0.7166666666666667,
+      "f1": 0.8349514563106796
+    },
+    {
+      "class_id": 1,
+      "name_vi": "Giới hạn tốc độ 30 km/h",
+      "name_en": "Speed limit (30km/h)",
+      "support": 720,
+      "precision": 0.911504424778761,
+      "recall": 0.8583333333333333,
+      "f1": 0.8841201716738197
+    },
+    {
+      "class_id": 2,
+      "name_vi": "Giới hạn tốc độ 50 km/h",
+      "name_en": "Speed limit (50km/h)",
+      "support": 750,
+      "precision": 0.8608058608058609,
+      "recall": 0.94,
+      "f1": 0.8986615678776291
+    },
+    {
+      "class_id": 3,
+      "name_vi": "Giới hạn tốc độ 60 km/h",
+      "name_en": "Speed limit (60km/h)",
+      "support": 450,
+      "precision": 0.948019801980198,
+      "recall": 0.8511111111111112,
+      "f1": 0.8969555035128806
+    },
+    {
+      "class_id": 4,
+      "name_vi": "Giới hạn tốc độ 70 km/h",
+      "name_en": "Speed limit (70km/h)",
+      "support": 660,
+      "precision": 0.9342301943198804,
+      "recall": 0.946969696969697,
+      "f1": 0.9405568096313017
+    },
+    {
+      "class_id": 5,
+      "name_vi": "Giới hạn tốc độ 80 km/h",
+      "name_en": "Speed limit (80km/h)",
+      "support": 630,
+      "precision": 0.7458100558659218,
+      "recall": 0.8476190476190476,
+      "f1": 0.7934621099554234
+    },
+    {
+      "class_id": 6,
+      "name_vi": "Hết giới hạn tốc độ 80 km/h",
+      "name_en": "End of speed limit (80km/h)",
+      "support": 150,
+      "precision": 0.940677966101695,
+      "recall": 0.74,
+      "f1": 0.8283582089552238
+    },
+    {
+      "class_id": 7,
+      "name_vi": "Giới hạn tốc độ 100 km/h",
+      "name_en": "Speed limit (100km/h)",
+      "support": 450,
+      "precision": 0.8350730688935282,
+      "recall": 0.8888888888888888,
+      "f1": 0.8611410118406889
+    },
+    {
+      "class_id": 8,
+      "name_vi": "Giới hạn tốc độ 120 km/h",
+      "name_en": "Speed limit (120km/h)",
+      "support": 450,
+      "precision": 0.8439716312056738,
+      "recall": 0.7933333333333333,
+      "f1": 0.8178694158075601
+    },
+    {
+      "class_id": 9,
+      "name_vi": "Cấm vượt",
+      "name_en": "No passing",
+      "support": 480,
+      "precision": 0.9538152610441767,
+      "recall": 0.9895833333333334,
+      "f1": 0.9713701431492843
+    },
+    {
+      "class_id": 10,
+      "name_vi": "Cấm xe trên 3,5 tấn vượt",
+      "name_en": "No passing for vehicles over 3.5 metric tons",
+      "support": 660,
+      "precision": 0.9863013698630136,
+      "recall": 0.9818181818181818,
+      "f1": 0.9840546697038725
+    },
+    {
+      "class_id": 11,
+      "name_vi": "Giao nhau với đường không ưu tiên",
+      "name_en": "Right-of-way at the next intersection",
+      "support": 420,
+      "precision": 0.875,
+      "recall": 0.8333333333333334,
+      "f1": 0.8536585365853658
+    },
+    {
+      "class_id": 12,
+      "name_vi": "Đường ưu tiên",
+      "name_en": "Priority road",
+      "support": 690,
+      "precision": 1.0,
+      "recall": 0.9942028985507246,
+      "f1": 0.997093023255814
+    },
+    {
+      "class_id": 13,
+      "name_vi": "Nhường đường",
+      "name_en": "Yield",
+      "support": 720,
+      "precision": 0.9986111111111111,
+      "recall": 0.9986111111111111,
+      "f1": 0.9986111111111111
+    },
+    {
+      "class_id": 14,
+      "name_vi": "Dừng lại (STOP)",
+      "name_en": "Stop",
+      "support": 270,
+      "precision": 1.0,
+      "recall": 0.9925925925925926,
+      "f1": 0.9962825278810409
+    },
+    {
+      "class_id": 15,
+      "name_vi": "Đường cấm",
+      "name_en": "No vehicles",
+      "support": 210,
+      "precision": 0.9369369369369369,
+      "recall": 0.9904761904761905,
+      "f1": 0.9629629629629629
+    },
+    {
+      "class_id": 16,
+      "name_vi": "Cấm xe tải trên 3,5 tấn",
+      "name_en": "Vehicles over 3.5 metric tons prohibited",
+      "support": 150,
+      "precision": 1.0,
+      "recall": 0.98,
+      "f1": 0.98989898989899
+    },
+    {
+      "class_id": 17,
+      "name_vi": "Cấm đi ngược chiều",
+      "name_en": "No entry",
+      "support": 360,
+      "precision": 1.0,
+      "recall": 0.9666666666666667,
+      "f1": 0.9830508474576272
+    },
+    {
+      "class_id": 18,
+      "name_vi": "Nguy hiểm khác",
+      "name_en": "General caution",
+      "support": 390,
+      "precision": 0.8562691131498471,
+      "recall": 0.717948717948718,
+      "f1": 0.7810320781032078
+    },
+    {
+      "class_id": 19,
+      "name_vi": "Chỗ ngoặt nguy hiểm vòng bên trái",
+      "name_en": "Dangerous curve to the left",
+      "support": 60,
+      "precision": 0.76,
+      "recall": 0.6333333333333333,
+      "f1": 0.6909090909090909
+    },
+    {
+      "class_id": 20,
+      "name_vi": "Chỗ ngoặt nguy hiểm vòng bên phải",
+      "name_en": "Dangerous curve to the right",
+      "support": 90,
+      "precision": 0.8023255813953488,
+      "recall": 0.7666666666666667,
+      "f1": 0.7840909090909091
+    },
+    {
+      "class_id": 21,
+      "name_vi": "Nhiều chỗ ngoặt nguy hiểm liên tiếp",
+      "name_en": "Double curve",
+      "support": 90,
+      "precision": 0.7352941176470589,
+      "recall": 0.8333333333333334,
+      "f1": 0.78125
+    },
+    {
+      "class_id": 22,
+      "name_vi": "Đường lồi lõm",
+      "name_en": "Bumpy road",
+      "support": 120,
+      "precision": 0.9038461538461539,
+      "recall": 0.7833333333333333,
+      "f1": 0.8392857142857143
+    },
+    {
+      "class_id": 23,
+      "name_vi": "Đường trơn trượt",
+      "name_en": "Slippery road",
+      "support": 150,
+      "precision": 0.6198830409356725,
+      "recall": 0.7066666666666667,
+      "f1": 0.660436137071651
+    },
+    {
+      "class_id": 24,
+      "name_vi": "Đường bị thu hẹp về phía phải",
+      "name_en": "Road narrows on the right",
+      "support": 90,
+      "precision": 0.8404255319148937,
+      "recall": 0.8777777777777778,
+      "f1": 0.8586956521739131
+    },
+    {
+      "class_id": 25,
+      "name_vi": "Công trường",
+      "name_en": "Road work",
+      "support": 480,
+      "precision": 0.7614035087719299,
+      "recall": 0.9041666666666667,
+      "f1": 0.8266666666666667
+    },
+    {
+      "class_id": 26,
+      "name_vi": "Giao nhau có tín hiệu đèn",
+      "name_en": "Traffic signals",
+      "support": 180,
+      "precision": 0.7195121951219512,
+      "recall": 0.6555555555555556,
+      "f1": 0.686046511627907
+    },
+    {
+      "class_id": 27,
+      "name_vi": "Đoạn đường người đi bộ cắt ngang",
+      "name_en": "Pedestrians",
+      "support": 60,
+      "precision": 0.8235294117647058,
+      "recall": 0.7,
+      "f1": 0.7567567567567568
+    },
+    {
+      "class_id": 28,
+      "name_vi": "Trẻ em qua đường",
+      "name_en": "Children crossing",
+      "support": 150,
+      "precision": 0.5739644970414202,
+      "recall": 0.6466666666666666,
+      "f1": 0.6081504702194357
+    },
+    {
+      "class_id": 29,
+      "name_vi": "Đoạn đường người đi xe đạp cắt ngang",
+      "name_en": "Bicycles crossing",
+      "support": 90,
+      "precision": 0.8266666666666667,
+      "recall": 0.6888888888888889,
+      "f1": 0.7515151515151515
+    },
+    {
+      "class_id": 30,
+      "name_vi": "Cảnh báo băng tuyết",
+      "name_en": "Beware of ice/snow",
+      "support": 150,
+      "precision": 0.45,
+      "recall": 0.24,
+      "f1": 0.3130434782608696
+    },
+    {
+      "class_id": 31,
+      "name_vi": "Thú rừng vượt qua đường",
+      "name_en": "Wild animals crossing",
+      "support": 270,
+      "precision": 0.7463976945244957,
+      "recall": 0.9592592592592593,
+      "f1": 0.839546191247974
+    },
+    {
+      "class_id": 32,
+      "name_vi": "Hết mọi lệnh cấm",
+      "name_en": "End of all speed and passing limits",
+      "support": 60,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "class_id": 33,
+      "name_vi": "Hướng đi phải theo: rẽ phải",
+      "name_en": "Turn right ahead",
+      "support": 210,
+      "precision": 0.9952380952380953,
+      "recall": 0.9952380952380953,
+      "f1": 0.9952380952380953
+    },
+    {
+      "class_id": 34,
+      "name_vi": "Hướng đi phải theo: rẽ trái",
+      "name_en": "Turn left ahead",
+      "support": 120,
+      "precision": 1.0,
+      "recall": 0.9916666666666667,
+      "f1": 0.99581589958159
+    },
+    {
+      "class_id": 35,
+      "name_vi": "Hướng đi phải theo: đi thẳng",
+      "name_en": "Ahead only",
+      "support": 390,
+      "precision": 0.9847328244274809,
+      "recall": 0.9923076923076923,
+      "f1": 0.9885057471264368
+    },
+    {
+      "class_id": 36,
+      "name_vi": "Đi thẳng hoặc rẽ phải",
+      "name_en": "Go straight or right",
+      "support": 120,
+      "precision": 0.9916666666666667,
+      "recall": 0.9916666666666667,
+      "f1": 0.9916666666666667
+    },
+    {
+      "class_id": 37,
+      "name_vi": "Đi thẳng hoặc rẽ trái",
+      "name_en": "Go straight or left",
+      "support": 60,
+      "precision": 1.0,
+      "recall": 0.9333333333333333,
+      "f1": 0.9655172413793104
+    },
+    {
+      "class_id": 38,
+      "name_vi": "Đi bên phải chướng ngại vật",
+      "name_en": "Keep right",
+      "support": 690,
+      "precision": 1.0,
+      "recall": 0.9971014492753624,
+      "f1": 0.9985486211901307
+    },
+    {
+      "class_id": 39,
+      "name_vi": "Đi bên trái chướng ngại vật",
+      "name_en": "Keep left",
+      "support": 90,
+      "precision": 1.0,
+      "recall": 0.9777777777777777,
+      "f1": 0.9887640449438202
+    },
+    {
+      "class_id": 40,
+      "name_vi": "Nơi giao nhau chạy theo vòng xuyến",
+      "name_en": "Roundabout mandatory",
+      "support": 90,
+      "precision": 0.9368421052631579,
+      "recall": 0.9888888888888889,
+      "f1": 0.9621621621621622
+    },
+    {
+      "class_id": 41,
+      "name_vi": "Hết cấm vượt",
+      "name_en": "End of no passing",
+      "support": 60,
+      "precision": 0.926829268292683,
+      "recall": 0.6333333333333333,
+      "f1": 0.7524752475247525
+    },
+    {
+      "class_id": 42,
+      "name_vi": "Hết cấm xe trên 3,5 tấn vượt",
+      "name_en": "End of no passing by vehicles over 3.5 metric tons",
+      "support": 90,
+      "precision": 0.9733333333333334,
+      "recall": 0.8111111111111111,
+      "f1": 0.8848484848484849
+    }
+  ],
+  "error_samples_knn_f5": [
+    {
+      "test_index": 196,
+      "filename": "00196.ppm",
+      "width": 28,
+      "height": 27,
+      "true_id": 8,
+      "true_name": "Giới hạn tốc độ 120 km/h",
+      "pred_id": 7,
+      "pred_name": "Giới hạn tốc độ 100 km/h"
+    },
+    {
+      "test_index": 76,
+      "filename": "00076.ppm",
+      "width": 45,
+      "height": 51,
+      "true_id": 1,
+      "true_name": "Giới hạn tốc độ 30 km/h",
+      "pred_id": 5,
+      "pred_name": "Giới hạn tốc độ 80 km/h"
+    },
+    {
+      "test_index": 87,
+      "filename": "00087.ppm",
+      "width": 36,
+      "height": 41,
+      "true_id": 7,
+      "true_name": "Giới hạn tốc độ 100 km/h",
+      "pred_id": 8,
+      "pred_name": "Giới hạn tốc độ 120 km/h"
+    },
+    {
+      "test_index": 266,
+      "filename": "00266.ppm",
+      "width": 28,
+      "height": 28,
+      "true_id": 5,
+      "true_name": "Giới hạn tốc độ 80 km/h",
+      "pred_id": 2,
+      "pred_name": "Giới hạn tốc độ 50 km/h"
+    },
+    {
+      "test_index": 760,
+      "filename": "00760.ppm",
+      "width": 47,
+      "height": 48,
+      "true_id": 3,
+      "true_name": "Giới hạn tốc độ 60 km/h",
+      "pred_id": 5,
+      "pred_name": "Giới hạn tốc độ 80 km/h"
+    },
+    {
+      "test_index": 198,
+      "filename": "00198.ppm",
+      "width": 44,
+      "height": 40,
+      "true_id": 18,
+      "true_name": "Nguy hiểm khác",
+      "pred_id": 25,
+      "pred_name": "Công trường"
+    },
+    {
+      "test_index": 12,
+      "filename": "00012.ppm",
+      "width": 79,
+      "height": 73,
+      "true_id": 23,
+      "true_name": "Đường trơn trượt",
+      "pred_id": 31,
+      "pred_name": "Thú rừng vượt qua đường"
+    },
+    {
+      "test_index": 213,
+      "filename": "00213.ppm",
+      "width": 51,
+      "height": 49,
+      "true_id": 5,
+      "true_name": "Giới hạn tốc độ 80 km/h",
+      "pred_id": 1,
+      "pred_name": "Giới hạn tốc độ 30 km/h"
+    }
+  ],
+  "error_diagnostics": {
+    "width_bins": [
+      {
+        "label": "< 32 px",
+        "count": 2105,
+        "errors": 349,
+        "error_rate_pct": 16.57957244655582
+      },
+      {
+        "label": "32–45 px",
+        "count": 4991,
+        "errors": 526,
+        "error_rate_pct": 10.538970146263274
+      },
+      {
+        "label": "46–64 px",
+        "count": 3220,
+        "errors": 237,
+        "error_rate_pct": 7.3602484472049685
+      },
+      {
+        "label": "> 64 px",
+        "count": 2314,
+        "errors": 178,
+        "error_rate_pct": 7.6923076923076925
+      }
+    ],
+    "brightness_bins": [
+      {
+        "label": "< 50 (Rất tối)",
+        "count": 3821,
+        "errors": 493,
+        "error_rate_pct": 12.902381575503794
+      },
+      {
+        "label": "50–100 (Tối vừa)",
+        "count": 4835,
+        "errors": 441,
+        "error_rate_pct": 9.120992761116856
+      },
+      {
+        "label": "101–150 (Đủ sáng)",
+        "count": 2832,
+        "errors": 204,
+        "error_rate_pct": 7.203389830508475
+      },
+      {
+        "label": "> 150 (Sáng gắt)",
+        "count": 1142,
+        "errors": 152,
+        "error_rate_pct": 13.309982486865149
+      }
+    ],
+    "coverage_knn_f5": [
+      {
+        "threshold": 0.0,
+        "accepted_count": 12630,
+        "coverage_pct": 100.0,
+        "accuracy_pct": 89.78622327790974
+      },
+      {
+        "threshold": 0.3,
+        "accepted_count": 12431,
+        "coverage_pct": 98.42438638163104,
+        "accuracy_pct": 90.75697852143834
+      },
+      {
+        "threshold": 0.5,
+        "accepted_count": 11502,
+        "coverage_pct": 91.06888361045131,
+        "accuracy_pct": 94.3488089027995
+      },
+      {
+        "threshold": 0.6,
+        "accepted_count": 10868,
+        "coverage_pct": 86.04908946951703,
+        "accuracy_pct": 96.22745675377254
+      },
+      {
+        "threshold": 0.7,
+        "accepted_count": 10242,
+        "coverage_pct": 81.09263657957244,
+        "accuracy_pct": 97.79339972661589
+      },
+      {
+        "threshold": 0.8,
+        "accepted_count": 9610,
+        "coverage_pct": 76.08867775138559,
+        "accuracy_pct": 98.6264308012487
+      },
+      {
+        "threshold": 0.85,
+        "accepted_count": 8885,
+        "coverage_pct": 70.34837688044338,
+        "accuracy_pct": 99.30219471018572
+      },
+      {
+        "threshold": 0.9,
+        "accepted_count": 8884,
+        "coverage_pct": 70.34045922406968,
+        "accuracy_pct": 99.30211616389015
+      },
+      {
+        "threshold": 0.95,
+        "accepted_count": 7899,
+        "coverage_pct": 62.541567695961994,
+        "accuracy_pct": 99.63286491961007
+      }
+    ],
+    "coverage_mlp_f5": [
+      {
+        "threshold": 0.0,
+        "accepted_count": 12630,
+        "coverage_pct": 100.0,
+        "accuracy_pct": 92.77117973079967
+      },
+      {
+        "threshold": 0.3,
+        "accepted_count": 12625,
+        "coverage_pct": 99.96041171813144,
+        "accuracy_pct": 92.79207920792079
+      },
+      {
+        "threshold": 0.5,
+        "accepted_count": 12524,
+        "coverage_pct": 99.16072842438638,
+        "accuracy_pct": 93.30884701373363
+      },
+      {
+        "threshold": 0.6,
+        "accepted_count": 12349,
+        "coverage_pct": 97.77513855898654,
+        "accuracy_pct": 94.04810106081463
+      },
+      {
+        "threshold": 0.7,
+        "accepted_count": 12171,
+        "coverage_pct": 96.36579572446556,
+        "accuracy_pct": 94.80732889655738
+      },
+      {
+        "threshold": 0.8,
+        "accepted_count": 11966,
+        "coverage_pct": 94.74267616785431,
+        "accuracy_pct": 95.65435400300852
+      },
+      {
+        "threshold": 0.85,
+        "accepted_count": 11833,
+        "coverage_pct": 93.68962787015043,
+        "accuracy_pct": 96.06186089749006
+      },
+      {
+        "threshold": 0.9,
+        "accepted_count": 11664,
+        "coverage_pct": 92.35154394299288,
+        "accuracy_pct": 96.5792181069959
+      },
+      {
+        "threshold": 0.95,
+        "accepted_count": 11399,
+        "coverage_pct": 90.25336500395883,
+        "accuracy_pct": 97.41205368892008
+      }
+    ]
+  },
+  "demo_samples_multi": [
+    {
+      "filename": "test_class_14.png",
+      "true_class_id": 14,
+      "true_name_vi": "Dừng lại (STOP)",
+      "knn_pred_id": 14,
+      "knn_prob": 1.0,
+      "mlp_pred_id": 14,
+      "mlp_prob": 0.9999902248382568
+    },
+    {
+      "filename": "test_class_12.png",
+      "true_class_id": 12,
+      "true_name_vi": "Đường ưu tiên",
+      "knn_pred_id": 12,
+      "knn_prob": 1.0,
+      "mlp_pred_id": 12,
+      "mlp_prob": 0.993878185749054
+    },
+    {
+      "filename": "test_class_13.png",
+      "true_class_id": 13,
+      "true_name_vi": "Nhường đường",
+      "knn_pred_id": 13,
+      "knn_prob": 1.0,
+      "mlp_pred_id": 13,
+      "mlp_prob": 1.0
+    },
+    {
+      "filename": "test_class_17.png",
+      "true_class_id": 17,
+      "true_name_vi": "Cấm đi ngược chiều",
+      "knn_pred_id": 17,
+      "knn_prob": 1.0,
+      "mlp_pred_id": 17,
+      "mlp_prob": 0.9948639273643494
+    },
+    {
+      "filename": "test_class_40.png",
+      "true_class_id": 40,
+      "true_name_vi": "Nơi giao nhau chạy theo vòng xuyến",
+      "knn_pred_id": 40,
+      "knn_prob": 1.0,
+      "mlp_pred_id": 40,
+      "mlp_prob": 0.9997245669364929
+    }
+  ],
+  "best_knn_cfg": {
+    "k": 11,
+    "weights": "distance",
+    "metric": "euclidean"
+  },
+  "best_dt_cfg": {
+    "criterion": "entropy",
+    "max_depth": 15
+  }
+}

@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="kpi-strip">
+  <div class="kpi-card">
+    <div class="kpi-label">Dữ liệu & Phân tách sạch</div>
+    <div class="kpi-val">{{ "{:,}".format(dataset_meta.get('total_images', 51839)).replace(",", ".") }} ảnh / 43 lớp</div>
+    <div class="kpi-sub">1.045 track Train vs 262 track GroupVal (0 trùng)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">K-NN tối ưu (k=11, F5 PCA-128)</div>
+    <div class="kpi-val">89,79% ± 0,53%</div>
+    <div class="kpi-sub">Test Accuracy (Macro-F1: 86,50% · F3-PCA: 90,45%)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">MLP Neural Network (F5 Mở rộng)</div>
+    <div class="kpi-val">92,77% ± 0,46%</div>
+    <div class="kpi-sub">Macro-F1: 89,96% · Tốc độ suy luận Test: 0,02s</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Ngưỡng an toàn ADAS (τ)</div>
+    <div class="kpi-val" id="kpi-tau-val">{{ "%.2f"|format(default_tau) }}</div>
+    <div class="kpi-sub">Tại τ=0,70: K-NN đạt 97,79% trên 81,1% mẫu</div>
+  </div>
+</section>
+
+<section class="workspace-grid">
+  <!-- Left Column: Input, Parameters & Diagnostics -->
+  <aside class="panel-col">
+    <div class="card">
+      <div class="card-header">
+        <h2>1. Đầu vào Ảnh & Điều khiển Suy luận</h2>
+        <span class="badge-tag">app_demo.py</span>
+      </div>
+
+      <form id="predict-form" class="control-stack">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="image-input" name="image" accept="image/*" hidden />
+          <div class="dropzone-content">
+            <strong>Kéo thả ảnh biển báo hoặc nhấn để tải tệp</strong>
+            <span>Hỗ trợ PNG, JPG, PPM (tối đa 10 MB)</span>
+          </div>
+          <span class="file-status" id="file-status">Đang sử dụng mẫu chuẩn: {{ selected_sample }}</span>
+        </div>
+
+        <div class="control-group">
+          <label class="field-label">Chọn bộ phân loại chính (tải từ gtsrb_pipeline.joblib)</label>
+          <div class="radio-grid">
+            {% for spec in model_specs %}
+            <label class="radio-card {% if loop.first %}active{% endif %}">
+              <input type="radio" name="model_choice" value="{{ spec.choice }}" {% if loop.first %}checked{% endif %} />
+              <span>{{ spec.choice }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="auto-trim" name="auto_trim" />
+          <span>Tự động cắt lề 10% (<code>crop_center_margin</code> – dùng cho ảnh chụp chưa cắt sát biển báo)</span>
+        </label>
+
+        <div class="control-group">
+          <div class="slider-header">
+            <label class="field-label" for="tau-slider">Ngưỡng từ chối an toàn ADAS (τ)</label>
+            <strong id="tau-display">{{ "%.2f"|format(default_tau) }}</strong>
+          </div>
+          <input type="range" id="tau-slider" name="tau" min="0.30" max="0.95" step="0.05" value="{{ "%.2f"|format(default_tau) }}" />
+        </div>
+
+        <button type="submit" class="btn-primary" id="predict-btn">Phân Tích & Nhận Dạng Biển Báo</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>2. Bộ 8 Ảnh Mẫu Thực Nghiệm (sample_images/)</h2>
+      </div>
+      <div class="sample-grid" id="sample-grid">
+        {% for item in gallery %}
+        <button type="button" class="sample-tile {% if item.filename == selected_sample %}selected{% endif %}" data-sample="{{ item.filename }}">
+          <img src="{{ item.thumb_uri }}" alt="{{ item.short_label }}" />
+          <span class="sample-name">{{ item.short_label }}</span>
+          <span class="sample-size">{{ item.size_str }} px</span>
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>3. Chẩn Đoán Chất Lượng Ảnh & Kênh Màu</h2>
+      </div>
+      <div class="diag-grid">
+        <div class="diag-box">
+          <div class="diag-label">Kích thước gốc</div>
+          <div class="diag-val" id="diag-size">{{ initial_result.diagnostics.width }} × {{ initial_result.diagnostics.height }} px</div>
+          <div class="diag-note" id="diag-res-note">{{ initial_result.diagnostics.resolution_status }}</div>
+        </div>
+        <div class="diag-box">
+          <div class="diag-label">Độ sáng trung bình</div>
+          <div class="diag-val" id="diag-bright">{{ initial_result.diagnostics.mean_brightness }} / 255</div>
+          <div class="diag-note" id="diag-bright-note">{{ initial_result.diagnostics.brightness_status }}</div>
+        </div>
+      </div>
+      <div class="color-bars">
+        <div class="color-row">
+          <span>Tỷ lệ điểm ảnh Đỏ</span>
+          <div class="bar-track"><div class="bar-fill red" id="col-red-bar" style="width: {{ initial_result.diagnostics.color_ratios.red }}%;"></div></div>
+          <strong id="col-red-val">{{ initial_result.diagnostics.color_ratios.red }}%</strong>
+        </div>
+        <div class="color-row">
+          <span>Tỷ lệ điểm ảnh Xanh lam</span>
+          <div class="bar-track"><div class="bar-fill blue" id="col-blue-bar" style="width: {{ initial_result.diagnostics.color_ratios.blue }}%;"></div></div>
+          <strong id="col-blue-val">{{ initial_result.diagnostics.color_ratios.blue }}%</strong>
+        </div>
+        <div class="color-row">
+          <span>Tỷ lệ điểm ảnh Vàng</span>
+          <div class="bar-track"><div class="bar-fill yellow" id="col-yellow-bar" style="width: {{ initial_result.diagnostics.color_ratios.yellow }}%;"></div></div>
+          <strong id="col-yellow-val">{{ initial_result.diagnostics.color_ratios.yellow }}%</strong>
+        </div>
+        <div class="color-row">
+          <span>Tỷ lệ vùng tối (V ≤ 60)</span>
+          <div class="bar-track"><div class="bar-fill dark" id="col-dark-bar" style="width: {{ initial_result.diagnostics.color_ratios.dark }}%;"></div></div>
+          <strong id="col-dark-val">{{ initial_result.diagnostics.color_ratios.dark }}%</strong>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right Column: Visual Pipeline, Inference & Multi-Model Consensus -->
+  <section class="panel-col">
+    <div class="card">
+      <div class="card-header">
+        <h2>4. Trực Quan Hóa Quy Trình Tiền Xử Lý & Đặc Trưng HOG</h2>
+        <span class="badge-tag muted" id="trim-badge">{% if initial_result.auto_trim_margin %}Đã cắt lề 10%{% else %}Giữ toàn khung{% endif %}</span>
+      </div>
+      <div class="pipeline-visual">
+        <div class="stage-box">
+          <img id="stage-orig" src="{{ initial_result.stages.orig_uri }}" alt="Ảnh gốc" />
+          <div class="stage-title">Bước 1: Ảnh gốc</div>
+          <div class="stage-sub">Định dạng RGB nguyên bản</div>
+        </div>
+        <div class="stage-arrow">→</div>
+        <div class="stage-box">
+          <img id="stage-resized" src="{{ initial_result.stages.resized_uri }}" alt="Resize 32x32" />
+          <div class="stage-title">Bước 2: Resize 32×32</div>
+          <div class="stage-sub">Nội suy vùng INTER_AREA</div>
+        </div>
+        <div class="stage-arrow">→</div>
+        <div class="stage-box">
+          <img id="stage-clahe" src="{{ initial_result.stages.clahe_uri }}" alt="CLAHE LAB" />
+          <div class="stage-title">Bước 3: Cân bằng CLAHE</div>
+          <div class="stage-sub">Không gian LAB (kênh L)</div>
+        </div>
+        <div class="stage-arrow">→</div>
+        <div class="stage-box">
+          <img id="stage-hog" src="{{ initial_result.stages.hog_uri }}" alt="HOG Gradient" />
+          <div class="stage-title">Bước 4: Bản đồ HOG</div>
+          <div class="stage-sub">1.764d + 96d màu → 128d PCA</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>5. Kết Quả Nhận Dạng & Xếp Hạng Top-5</h2>
+        <span class="safety-pill {{ initial_result.safety_level }}" id="safety-pill">{{ initial_result.safety_label }}</span>
+      </div>
+
+      <div class="hero-prediction">
+        <div>
+          <div class="pred-category" id="pred-category">{{ initial_result.primary.category }} · F1 lớp trên Test: {{ initial_result.primary.knn_test_f1 }}%</div>
+          <h3 class="pred-title" id="pred-title">Lớp {{ initial_result.primary.class_id }} – {{ initial_result.primary.name_vi }}</h3>
+          <div class="pred-en" id="pred-en">{{ initial_result.primary.name_en }}</div>
+        </div>
+        <div class="pred-score-box">
+          <div class="pred-score" id="pred-score">{{ "%.2f"|format(initial_result.primary.confidence) }}%</div>
+          <div class="pred-meta" id="pred-meta">{{ initial_result.model_choice }} · {{ initial_result.latency_ms }} ms</div>
+        </div>
+      </div>
+
+      <div class="top5-list" id="top5-list">
+        {% for row in initial_result.top_predictions %}
+        <div class="top5-row {% if loop.first %}top1{% endif %}">
+          <div class="top5-name">#{{ row.rank }} · Lớp {{ row.class_id }} – {{ row.name_vi }}</div>
+          <div class="top5-track"><div class="top5-fill" style="width: {{ row.confidence }}%;"></div></div>
+          <div class="top5-pct">{{ "%.2f"|format(row.confidence) }}%</div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="subsection-title">Đối chiếu đồng thuận 3 mô hình đã huấn luyện (Đồng thuận: <span id="agree-ratio">{{ initial_result.agreement_count }}/{{ initial_result.agreement_total }}</span>)</div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Mô hình (F5 – PCA 128)</th>
+              <th>Dự đoán Top-1</th>
+              <th>Nhóm biển báo</th>
+              <th class="num">Độ tin cậy</th>
+              <th class="num">Độ trễ</th>
+            </tr>
+          </thead>
+          <tbody id="consensus-tbody">
+            {% for row in initial_result.consensus %}
+            <tr>
+              <td>{{ row.choice }}</td>
+              <td>Lớp {{ row.class_id }} – {{ row.name_vi }}</td>
+              <td>{{ row.category }}</td>
+              <td class="num">{{ "%.2f"|format(row.confidence) }}%</td>
+              <td class="num">{{ "%.2f"|format(row.latency_ms) }} ms</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="caution-box" id="calibration-note">
+        <strong>Lưu ý hiệu chuẩn xác suất:</strong> Giá trị phần trăm là {{ initial_result.score_type }} (chưa hiệu chuẩn xác suất hậu nghiệm). Do đó cần kết hợp ngưỡng từ chối τ và bảng đồng thuận đa mô hình trước khi đưa ra cảnh báo ADAS.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>6. Ma Trận Kiểm Thử Nhanh Trên 8 Ảnh Mẫu GTSRB (sample_images/)</h2>
+        <span class="badge-tag muted">MLP 8/8 · K-NN 7/8 · DT 7/8</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table compact">
+          <thead>
+            <tr>
+              <th>Ảnh mẫu</th>
+              <th>Nhãn chuẩn</th>
+              <th>K-NN (F5)</th>
+              <th>Decision Tree (F5)</th>
+              <th>MLP Mở rộng</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for g in gallery %}
+            <tr>
+              <td><code>{{ g.filename }}</code></td>
+              <td>[{{ g.true_id }}] {{ g.true_name_vi }}</td>
+              <td class="{% if g.knn.class_id == g.true_id %}cell-ok{% else %}cell-warn{% endif %}">[{{ g.knn.class_id }}] {{ "%.1f"|format(g.knn.confidence) }}%</td>
+              <td class="{% if g.dt.class_id == g.true_id %}cell-ok{% else %}cell-warn{% endif %}">[{{ g.dt.class_id }}] {{ "%.1f"|format(g.dt.confidence) }}%</td>
+              <td class="{% if g.mlp.class_id == g.true_id %}cell-ok{% else %}cell-warn{% endif %}">[{{ g.mlp.class_id }}] {{ "%.1f"|format(g.mlp.confidence) }}%</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</section>
+{% endblock %}

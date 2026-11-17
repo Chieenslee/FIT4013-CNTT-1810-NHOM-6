@@ -35,21 +35,76 @@ def get_per_class_map() -> dict[int, dict[str, Any]]:
     return {int(row["class_id"]): row for row in summary.get("per_class_knn_f5", [])}
 
 
+def _find_metric_row(exp5: list[dict[str, Any]], prefix: str) -> dict[str, Any] | None:
+    return next((r for r in exp5 if r.get("model", "").startswith(prefix)), None)
+
+
 def get_test_benchmarks() -> dict[str, dict[str, Any]]:
-    """Return locked-Test Accuracy and Macro-F1 summaries keyed by model choice."""
+    """Return GroupVal, 80%-Train Test, and Full-Train Test summaries keyed by model choice."""
     summary = get_metrics_summary()
     exp5 = summary.get("exp5_models_comparison", [])
     benchmarks: dict[str, dict[str, Any]] = {}
     for spec in MODEL_SPECS:
-        row = next(
-            (r for r in exp5 if r["model"].startswith(spec["metrics_prefix"])),
-            None,
-        )
+        row = _find_metric_row(exp5, spec["metrics_prefix"])
+        full_row = _find_metric_row(exp5, spec["full_prefix"]) if spec.get("full_prefix") else None
+        entry: dict[str, Any] = {}
         if row:
-            benchmarks[spec["choice"]] = {
-                "group_val_acc": round(row["group_val"]["accuracy"] * 100.0, 2),
-                "test_acc": round(row["test"]["accuracy"] * 100.0, 2),
-                "test_ci": round(row["bootstrap_ci"]["accuracy_halfwidth"] * 100.0, 2),
-                "macro_f1": round(row["test"]["f1_macro"] * 100.0, 2),
-            }
+            gv = row.get("group_val") or {}
+            te = row.get("test") or {}
+            ci = row.get("bootstrap_ci") or {}
+            entry.update(
+                {
+                    "group_val_acc": round(gv.get("accuracy", 0.0) * 100.0, 2) if gv else None,
+                    "test_acc": round(te.get("accuracy", 0.0) * 100.0, 2),
+                    "test_ci": round(ci.get("accuracy_halfwidth", 0.0) * 100.0, 2),
+                    "macro_f1": round(te.get("f1_macro", 0.0) * 100.0, 2),
+                    "pred_time_sec": round(te.get("pred_time_sec", 0.0), 2),
+                }
+            )
+        if full_row:
+            ft_te = full_row.get("test") or {}
+            ft_ci = full_row.get("bootstrap_ci") or {}
+            entry.update(
+                {
+                    "full_train_test_acc": round(ft_te.get("accuracy", 0.0) * 100.0, 2),
+                    "full_train_ci": round(ft_ci.get("accuracy_halfwidth", 0.0) * 100.0, 2),
+                    "full_train_macro_f1": round(ft_te.get("f1_macro", 0.0) * 100.0, 2),
+                    "full_train_pred_sec": round(ft_te.get("pred_time_sec", 0.0), 2),
+                }
+            )
+        if entry:
+            benchmarks[spec["choice"]] = entry
     return benchmarks
+
+
+def get_kpi_summary() -> dict[str, Any]:
+    """Return formatted top-bar KPI metrics dynamically from metrics_summary.json."""
+    summary = get_metrics_summary()
+    ds = summary.get("dataset", {})
+    bm = get_test_benchmarks()
+    ed = summary.get("error_diagnostics", {})
+    knn_cov = ed.get("coverage_knn_f5", [])
+    cov_70 = next((c for c in knn_cov if abs(c.get("threshold", 0.0) - 0.70) < 1e-6), {})
+
+    kf3 = bm.get("K-NN F3-PCA 128 (Tối ưu K-NN)", {})
+    mf3 = bm.get("MLP F3-PCA 128 (Tốt nhất toàn cục)", {})
+    best_f3p_k = summary.get("best_f3p_cfg", {}).get("k", 11)
+
+    return {
+        "total_images": ds.get("total_images", 51839),
+        "train_full_count": ds.get("train_full_count", 39209),
+        "unique_train_tracks": ds.get("unique_train_tracks", 1307),
+        "train_tracks_count": ds.get("train_tracks_count", 1045),
+        "val_tracks_count": ds.get("val_tracks_count", 262),
+        "knn_f3p_k": best_f3p_k,
+        "knn_f3p_full_acc": kf3.get("full_train_test_acc", kf3.get("test_acc", 0.0)),
+        "knn_f3p_full_ci": kf3.get("full_train_ci", kf3.get("test_ci", 0.0)),
+        "knn_f3p_full_f1": kf3.get("full_train_macro_f1", kf3.get("macro_f1", 0.0)),
+        "knn_f3p_80_acc": kf3.get("test_acc", 0.0),
+        "mlp_f3p_full_acc": mf3.get("full_train_test_acc", mf3.get("test_acc", 0.0)),
+        "mlp_f3p_full_ci": mf3.get("full_train_ci", mf3.get("test_ci", 0.0)),
+        "mlp_f3p_full_f1": mf3.get("full_train_macro_f1", mf3.get("macro_f1", 0.0)),
+        "mlp_f3p_pred_sec": mf3.get("full_train_pred_sec", mf3.get("pred_time_sec", 0.0)),
+        "cov70_acc": round(cov_70.get("accuracy_pct", 0.0), 2),
+        "cov70_cov": round(cov_70.get("coverage_pct", 0.0), 1),
+    }

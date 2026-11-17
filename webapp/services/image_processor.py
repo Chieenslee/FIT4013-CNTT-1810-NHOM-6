@@ -8,23 +8,18 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from features import extract_color_features, extract_hog_features, preprocess_image
+from features import (
+    crop_center_margin,
+    extract_color_features,
+    extract_hog_features,
+    preprocess_image,
+)
 
 
 def read_image_unicode(path: str) -> np.ndarray:
     """Read an image into an RGB uint8 numpy array regardless of Unicode characters in path."""
     with Image.open(path) as img:
         return np.asarray(img.convert("RGB"), dtype=np.uint8)
-
-
-def crop_center_margin(img_rgb: np.ndarray, margin_ratio: float = 0.10) -> np.ndarray:
-    """Trim outer margin ratio when an uploaded real-world photo includes surrounding background."""
-    h, w = img_rgb.shape[:2]
-    dx = max(1, int(w * margin_ratio))
-    dy = max(1, int(h * margin_ratio))
-    if w - 2 * dx >= 16 and h - 2 * dy >= 16:
-        return img_rgb[dy : h - dy, dx : w - dx]
-    return img_rgb
 
 
 def encode_png_data_uri(img_rgb: np.ndarray, upscale_size: int = 160) -> str:

@@ -7,6 +7,7 @@ from .image_processor import (
     read_image_unicode,
 )
 from .model_registry import (
+    get_kpi_summary,
     get_metrics_summary,
     get_model_bundle,
     get_per_class_map,
@@ -19,6 +20,7 @@ __all__ = [
     "crop_center_margin",
     "evaluate_sample_gallery",
     "format_prediction_markdown",
+    "get_kpi_summary",
     "get_metrics_summary",
     "get_model_bundle",
     "get_per_class_map",

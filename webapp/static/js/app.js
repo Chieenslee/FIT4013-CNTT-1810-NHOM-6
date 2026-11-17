@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function submitPrediction() {
     const formData = new FormData();
     const chosenRadio = document.querySelector('input[name="model_choice"]:checked');
-    formData.append("model_choice", chosenRadio ? chosenRadio.value : "K-NN (F5 - PCA 128)");
+    formData.append("model_choice", chosenRadio ? chosenRadio.value : "K-NN F3-PCA 128 (Tối ưu K-NN)");
     formData.append("auto_trim", autoTrimBox.checked ? "true" : "false");
     formData.append("tau", tauSlider.value);
 
@@ -124,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
       uploadedFile = null;
       fileInput.value = "";
       activeSample = tile.dataset.sample;
+      autoTrimBox.checked = tile.dataset.autoTrim === "true";
       fileStatus.textContent = `Đang sử dụng mẫu chuẩn: ${activeSample}`;
       sampleTiles.forEach((t) => t.classList.remove("selected"));
       tile.classList.add("selected");

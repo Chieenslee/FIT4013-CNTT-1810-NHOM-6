@@ -7,9 +7,10 @@ import numpy as np
 from flask import Blueprint, jsonify, request
 from PIL import Image
 
-from webapp.config import DEFAULT_TAU, SAMPLE_CATALOG, SAMPLE_DIR
+from webapp.config import DEFAULT_MODEL_CHOICE, DEFAULT_TAU, SAMPLE_CATALOG, SAMPLE_DIR
 from webapp.services import (
     evaluate_sample_gallery,
+    get_kpi_summary,
     get_metrics_summary,
     get_test_benchmarks,
     read_image_unicode,
@@ -32,17 +33,19 @@ def health():
 
 @api_bp.route("/samples", methods=["GET"])
 def list_samples():
-    """Return 8 curated sample signs and live multi-model consensus evaluation."""
+    """Return curated GTSRB + external sample signs and live multi-model evaluation."""
     return jsonify({"samples": evaluate_sample_gallery()})
 
 
 @api_bp.route("/metrics", methods=["GET"])
 def metrics():
-    """Return dataset metadata and locked-Test model performance benchmarks."""
+    """Return dataset metadata, KPIs, 5-fold CV, and Test model benchmarks."""
     summary = get_metrics_summary()
     return jsonify(
         {
             "dataset": summary.get("dataset", {}),
+            "kpis": get_kpi_summary(),
+            "exp_5fold_cv": summary.get("exp_5fold_cv", []),
             "exp5_models_comparison": summary.get("exp5_models_comparison", []),
         }
     )
@@ -53,7 +56,7 @@ def predict():
     """Run traffic sign inference from either an uploaded image file or a sample filename."""
     model_choice = request.form.get("model_choice") or (
         request.get_json(silent=True) or {}
-    ).get("model_choice", "K-NN (F5 - PCA 128)")
+    ).get("model_choice", DEFAULT_MODEL_CHOICE)
 
     raw_trim = request.form.get("auto_trim")
     if raw_trim is None and request.is_json:

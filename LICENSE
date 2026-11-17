@@ -1,0 +1,37 @@
+MIT License (Source Code)
+
+Copyright (c) 2026 FIT4013 CNTT 18-10 - Nhom 6 (Dai Nam University)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+THIRD-PARTY DATASET NOTICE (GTSRB)
+================================================================================
+This repository does NOT redistribute the German Traffic Sign Recognition
+Benchmark (GTSRB) dataset binaries. Users are responsible for complying with the
+original GTSRB terms of use when downloading from the official INI / ERDA host:
+https://sid.erda.dk/public/archives/daaeac0d7ce1152aea9b61d9f1e19370/
+
+GTSRB is made available by the Institut fur Neuroinformatik (INI),
+Ruhr-Universitat Bochum for academic and non-commercial research use, subject
+to proper citation of:
+
+  J. Stallkamp, M. Schlipsing, J. Salmen, and C. Igel,
+  "Man vs. computer: Benchmarking machine learning algorithms for traffic sign
+   recognition," Neural Networks, vol. 32, pp. 323-332, 2012.

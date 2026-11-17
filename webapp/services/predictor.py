@@ -1,4 +1,4 @@
-"""Traffic sign inference service: feature transformation, multi-model consensus, and safety checks."""
+"""Traffic sign inference service: F3/F5 feature transformation, consensus, and safety checks."""
 
 import os
 import time
@@ -8,27 +8,48 @@ import numpy as np
 
 from constants import CLASS_NAMES_EN, CLASS_NAMES_VI
 from features import extract_hog_color_features
-from webapp.config import DEFAULT_TAU, MODEL_SPECS, SAMPLE_CATALOG, SAMPLE_DIR, get_sign_category
+from webapp.config import (
+    DEFAULT_MODEL_CHOICE,
+    DEFAULT_TAU,
+    MODEL_SPECS,
+    SAMPLE_CATALOG,
+    SAMPLE_DIR,
+    get_sign_category,
+)
 from webapp.services.image_processor import build_visual_pipeline, read_image_unicode
 from webapp.services.model_registry import get_model_bundle, get_per_class_map, get_test_benchmarks
 
 
+def _resolve_model_spec(model_choice: str) -> dict[str, Any]:
+    for spec in MODEL_SPECS:
+        if spec["choice"] == model_choice:
+            return spec
+    for spec in MODEL_SPECS:
+        if model_choice and model_choice in spec["choice"]:
+            return spec
+    return MODEL_SPECS[0]
+
+
 def run_prediction(
     img_rgb: np.ndarray,
-    model_choice: str = "K-NN (F5 - PCA 128)",
+    model_choice: str = DEFAULT_MODEL_CHOICE,
     auto_trim_margin: bool = False,
     tau: float = DEFAULT_TAU,
 ) -> dict[str, Any]:
-    """Execute end-to-end preprocessing, F5 PCA projection, and multi-model inference."""
+    """Execute preprocessing, F3/F5 PCA projections, and multi-model consensus inference."""
     bundle = get_model_bundle()
     visual = build_visual_pipeline(img_rgb, auto_trim_margin=auto_trim_margin)
 
     feat_1860 = extract_hog_color_features(visual["clahe_rgb"]).reshape(1, -1)
-    feat_scaled = bundle["scaler"].transform(feat_1860)
-    feat_pca = bundle["pca"].transform(feat_scaled)
+    feat_pca_f5 = bundle["pca"].transform(bundle["scaler"].transform(feat_1860))
+    if "scaler_f3" in bundle and "pca_f3" in bundle:
+        feat_pca_f3 = bundle["pca_f3"].transform(bundle["scaler_f3"].transform(feat_1860[:, :1764]))
+    else:
+        feat_pca_f3 = feat_pca_f5
 
     per_class = get_per_class_map()
     benchmarks = get_test_benchmarks()
+    target_spec = _resolve_model_spec(model_choice)
 
     consensus_rows: list[dict[str, Any]] = []
     selected_probs = None
@@ -36,14 +57,20 @@ def run_prediction(
     selected_ms = 0.0
 
     for spec in MODEL_SPECS:
+        bkey = spec["bundle_key"]
+        if bkey not in bundle:
+            continue
+        x_in = feat_pca_f3 if spec.get("feature_space") == "f3" else feat_pca_f5
         t0 = time.perf_counter()
-        probs = bundle[spec["bundle_key"]].predict_proba(feat_pca)[0]
+        probs = bundle[bkey].predict_proba(x_in)[0]
         dt_ms = (time.perf_counter() - t0) * 1000.0
         cid = int(np.argmax(probs))
         conf = float(probs[cid] * 100.0)
         consensus_rows.append(
             {
                 "choice": spec["choice"],
+                "short_label": spec["short_label"],
+                "bundle_key": bkey,
                 "class_id": cid,
                 "name_vi": CLASS_NAMES_VI[cid],
                 "name_en": CLASS_NAMES_EN[cid],
@@ -53,15 +80,15 @@ def run_prediction(
                 "score_type": spec["score_type"],
             }
         )
-        if spec["choice"] == model_choice or (
-            model_choice in spec["choice"] and selected_probs is None
-        ):
+        if spec["choice"] == target_spec["choice"]:
             selected_probs = probs
             selected_spec = spec
             selected_ms = dt_ms
 
     if selected_probs is None:
-        selected_probs = bundle["knn_model"].predict_proba(feat_pca)[0]
+        fallback_key = selected_spec["bundle_key"] if selected_spec["bundle_key"] in bundle else "knn_model"
+        x_fb = feat_pca_f3 if (fallback_key == "knn_f3p_model") else feat_pca_f5
+        selected_probs = bundle[fallback_key].predict_proba(x_fb)[0]
 
     top5_idx = np.argsort(selected_probs)[::-1][:5]
     top_predictions = []
@@ -116,25 +143,29 @@ def run_prediction(
 
 
 def evaluate_sample_gallery() -> list[dict[str, Any]]:
-    """Evaluate all 8 curated GTSRB test samples simultaneously across K-NN, DT, and MLP."""
+    """Evaluate all curated GTSRB + external uncropped samples across saved F3-PCA and F5 models."""
     results: list[dict[str, Any]] = []
     for item in SAMPLE_CATALOG:
         path = os.path.join(SAMPLE_DIR, item["filename"])
         if not os.path.exists(path):
             continue
         rgb = read_image_unicode(path)
-        res = run_prediction(rgb, model_choice="K-NN (F5 - PCA 128)", auto_trim_margin=False)
-        by_model = {c["choice"]: c for c in res["consensus"]}
+        do_trim = bool(item.get("auto_trim", False))
+        res = run_prediction(rgb, model_choice=DEFAULT_MODEL_CHOICE, auto_trim_margin=do_trim)
+        by_key = {c["bundle_key"]: c for c in res["consensus"]}
         results.append(
             {
                 "filename": item["filename"],
                 "true_id": item["true_id"],
                 "true_name_vi": CLASS_NAMES_VI[item["true_id"]],
                 "short_label": item["short_label"],
+                "auto_trim": do_trim,
                 "thumb_uri": res["stages"]["orig_uri"],
-                "knn": by_model["K-NN (F5 - PCA 128)"],
-                "dt": by_model["Decision Tree (F5 - PCA 128)"],
-                "mlp": by_model["MLP Neural Network (Mở rộng)"],
+                "knn_f3p": by_key.get("knn_f3p_model", by_key["knn_model"]),
+                "mlp_f3p": by_key.get("mlp_f3p_model", by_key["mlp_model"]),
+                "knn": by_key["knn_model"],
+                "dt": by_key["dt_model"],
+                "mlp": by_key["mlp_model"],
                 "size_str": f"{res['diagnostics']['width']}×{res['diagnostics']['height']}",
             }
         )
@@ -154,7 +185,7 @@ def format_prediction_markdown(result: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
-            "#### Đối chiếu đồng thuận cả 3 mô hình đã lưu (F5 – PCA 128 chiều)",
+            f"#### Đối chiếu đồng thuận {len(result['consensus'])} mô hình đã lưu (F3-PCA & F5-PCA 128 chiều)",
             "| Mô hình | Dự đoán Top-1 | Độ tin cậy (chưa hiệu chuẩn) | Thời gian |",
             "|---|---|---:|---:|",
         ]

@@ -6,6 +6,16 @@ import numpy as np
 from skimage.feature import hog
 
 
+def crop_center_margin(img_rgb: np.ndarray, margin_ratio: float = 0.10) -> np.ndarray:
+    """Trim outer margin ratio when an uploaded real-world photo includes surrounding background."""
+    h, w = img_rgb.shape[:2]
+    dx = max(1, int(w * margin_ratio))
+    dy = max(1, int(h * margin_ratio))
+    if w - 2 * dx >= 16 and h - 2 * dy >= 16:
+        return img_rgb[dy : h - dy, dx : w - dx]
+    return img_rgb
+
+
 def crop_roi_image(
     img_rgb: np.ndarray,
     roi: Tuple[int, int, int, int] = None,

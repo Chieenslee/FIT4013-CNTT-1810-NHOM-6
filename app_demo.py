@@ -7,7 +7,7 @@ All domain logic is modularized inside the `webapp/` package (`config`, `service
 import numpy as np
 
 from webapp import create_app
-from webapp.config import DEFAULT_TAU
+from webapp.config import DEFAULT_MODEL_CHOICE, DEFAULT_TAU
 from webapp.services import (
     crop_center_margin,
     format_prediction_markdown,
@@ -17,7 +17,7 @@ from webapp.services import (
 
 def predict_traffic_sign(
     image_rgb: np.ndarray,
-    model_choice: str = "K-NN (F5 - PCA 128)",
+    model_choice: str = DEFAULT_MODEL_CHOICE,
     auto_trim_margin: bool = False,
     tau: float = DEFAULT_TAU,
 ):

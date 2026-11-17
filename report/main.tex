@@ -31,7 +31,21 @@
 \setlength{\abovecaptionskip}{3pt}
 \setlength{\belowcaptionskip}{1pt}
 
-\IEEEpubid{\makebox[\columnwidth]{FIT4013 -- Nhập môn Học máy | Khoa CNTT, Trường Đại học Đại Nam \copyright 2026 Nhóm 6\hfill}\hspace{\columnsep}\makebox[\columnwidth]{}}
+\makeatletter
+\def\ps@IEEEtitlepagestyle{%
+  \def\@oddhead{}%
+  \def\@evenhead{}%
+  \def\@oddfoot{\normalfont\fontsize{8}{9.5}\selectfont FIT4013 -- ĐH Đại Nam (\copyright~2026 Nhóm 6) | \url{https://github.com/Chieenslee/FIT4013-CNTT-1810-NHOM-6}\hfill Trang~\thepage}%
+  \let\@evenfoot\@oddfoot
+}
+\def\ps@plain{%
+  \def\@oddhead{}%
+  \def\@evenhead{}%
+  \def\@oddfoot{\normalfont\fontsize{8}{9.5}\selectfont FIT4013 -- ĐH Đại Nam (\copyright~2026 Nhóm 6) | \url{https://github.com/Chieenslee/FIT4013-CNTT-1810-NHOM-6}\hfill Trang~\thepage}%
+  \let\@evenfoot\@oddfoot
+}
+\makeatother
+\pagestyle{plain}
 
 \begin{document}
 
@@ -41,13 +55,14 @@
 \IEEEauthorblockN{Lê Trọng Chiến\textsuperscript{*} (Trưởng nhóm), Đặng Việt Anh\textsuperscript{\textdagger}, Nguyễn Hữu Dũng\textsuperscript{\textdaggerdbl}, Kiều Văn Nam\textsuperscript{\S}}
 \IEEEauthorblockA{Khoa Công nghệ Thông tin, Trường Đại học Đại Nam, Hà Nội, Việt Nam (Lớp CNTT 18-10 -- Nhóm 6)\\
 MSV: \textsuperscript{*}1871020089 (Trưởng nhóm), \textsuperscript{\textdagger}1871020683, \textsuperscript{\textdaggerdbl}1871020172, \textsuperscript{\S}1871020416 --- GVHD: ThS. Lê Thị Thùy Trang\\
-Email: 1871020089@dnu.edu.vn, 1871020683@dnu.edu.vn, 1871020172@dnu.edu.vn, 1871020416@dnu.edu.vn}
+Email: 1871020089@dnu.edu.vn, 1871020683@dnu.edu.vn, 1871020172@dnu.edu.vn, 1871020416@dnu.edu.vn\\
+Mã nguồn dự án: \url{https://github.com/Chieenslee/FIT4013-CNTT-1810-NHOM-6}}
 }
 
 \maketitle
 
 \begin{abstract}
-Báo cáo này xây dựng và đánh giá quy trình học máy hoàn chỉnh để phân loại 43 loại biển báo giao thông trên toàn bộ 51.839 ảnh của bộ dữ liệu GTSRB, thực thi tái lập trên môi trường CPU của Google Colab. Nhằm loại bỏ hoàn toàn hiện tượng rò rỉ dữ liệu theo chuỗi khung hình liên tiếp (track) giữa tập huấn luyện và tập kiểm định, nhóm áp dụng phân tách StratifiedGroupKFold theo mã track vật lý (1.045 track huấn luyện so với 262 track kiểm định, không có track trùng lặp) và chỉ dùng tập kiểm định nhóm (GroupVal) để chọn siêu tham số trước khi đánh giá một lần cuối trên 12.630 ảnh Test độc lập. Kết quả cho thấy bước trích xuất đặc trưng HOG sau cắt vùng quan tâm ROI và cân bằng sáng cục bộ CLAHE là nhân tố quyết định nâng K-NN từ 50,59\% (Baseline pixel xám F1) lên 89,86\% (HOG F3) và 90,45\% sau nén PCA 128 chiều (F3-PCA, k=11). Ngược lại, việc ghép thêm 96 chiều màu vào K-NN làm giảm nhẹ độ chính xác xuống 89,79\% (kiểm định McNemar p = 0,0004) do chuẩn hóa phương sai đồng mức giữa các kênh màu với gradient cạnh, trong khi hỗ trợ tích cực cho Cây quyết định (tăng từ 72,05\% lên 72,32\%) và Gaussian Naive Bayes trên không gian PCA (88,20\%, suy luận 0,35 giây). Mô hình mở rộng MLP trên F5 đạt đỉnh 92,77\% ($\pm$ 0,46\%, Macro-F1 89,96\%). Hệ thống còn tích hợp phân tích lỗi định lượng theo kích thước, độ sáng, đường cong Coverage--Accuracy và thiết kế ứng dụng Web Demo đa mô hình theo kiến trúc mô-đun bằng Python Flask.
+Báo cáo xây dựng và đánh giá quy trình học máy có khả năng tái lập để phân loại 43 loại biển báo giao thông trên toàn bộ 51.839 ảnh của bộ dữ liệu GTSRB. Nhằm loại bỏ rò rỉ dữ liệu theo chuỗi khung hình liên tiếp (track), nhóm sử dụng phân tách StratifiedGroupKFold(5) theo mã track vật lý (1.045 track huấn luyện so với 262 track kiểm định ở Fold 0, kết hợp kiểm định chéo đầy đủ 5 fold). Toàn bộ siêu tham số ($k \in [1; 31]$, hệ đo khoảng cách, độ sâu cây, kiến trúc MLP, trọng số lớp Random Forest và ngưỡng từ chối an toàn $\tau$) được chốt độc lập trên GroupVal mà không dùng nhãn Test trước khi đánh giá trên 12.630 ảnh Test độc lập. Thực nghiệm tách bạch 9 tầng đặc trưng chứng minh bước cắt ROI và rút trích HOG tạo bước nhảy quyết định (+38,87 điểm \% từ pixel xám F1 50,59\% lên HOG thuần chưa CLAHE 89,45\%, và đạt 89,86\% khi thêm CLAHE). Ngược lại với giả thuyết ban đầu, việc ghép thêm 96 chiều màu vào K-NN làm giảm độ chính xác xuống 89,34\% (McNemar Holm-adjusted $p = 0,0303$) và từ 90,02\% (F3-PCA) xuống 89,18\% (F5); sau PCA 128 chiều, đặc trưng màu cũng làm giảm nhẹ cả Cây quyết định (68,58\% $\rightarrow$ 68,04\%) lẫn Gaussian Naive Bayes (88,37\% $\rightarrow$ 88,20\%). Thử nghiệm nhân trọng số khối màu $\alpha \in [0; 1]$ giải thích cơ chế này khi K-NN tăng đơn điệu khi $\alpha$ tiến về 0. Sau khi tinh chỉnh và tái huấn luyện trên toàn bộ 39.209 ảnh Train (1.307 track), mô hình K-NN F3-PCA tối ưu ($k=21$) đạt 91,00\% ($\pm$ 0,48\%, Macro-F1 88,49\%), còn mạng MLP F3-PCA đạt đỉnh 93,39\% ($\pm$ 0,44\%, Macro-F1 91,01\%). Hệ thống tích hợp phân tích lỗi đa biến (Wilson 95\% CI, hồi quy Logistic, ngưỡng $\tau = 0{,}70$) và ứng dụng Web Demo Python Flask.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -62,17 +77,16 @@ Trong các hệ thống hỗ trợ lái xe nâng cao (ADAS) và xe tự hành, n
 
 Báo cáo thực hiện quy trình học máy cổ điển có khả năng tái lập cao trên bộ dữ liệu chuẩn GTSRB (43 lớp) với bốn đóng góp trọng tâm:
 \begin{enumerate}
-  \item Phát hiện và xử lý triệt để rò rỉ dữ liệu theo chuỗi khung hình (track leakage) khi phân tách tập huấn luyện/kiểm định bằng phương pháp StratifiedGroupKFold~\cite{kaufman2012leakage,pedregosa2011scikit}, đồng thời khóa kín tập Test độc lập trong suốt quá trình tinh chỉnh tham số.
-  \item Thực hiện đánh giá tách bạch (ablation study) 8 tầng đặc trưng từ pixel thô đến HOG, đặc trưng màu sắc HSV/RGB, CLAHE và giảm chiều PCA trên cả ba thuật toán cốt lõi của học phần là K-NN, Cây quyết định (Decision Tree) và Gaussian Naive Bayes.
-  \item Đánh giá độ tin cậy thực nghiệm bằng khoảng tin cậy Bootstrap 95\% (1.000 lần lấy mẫu lại) và kiểm định thống kê McNemar, khắc phục tình trạng diễn giải các chênh lệch ngẫu nhiên dưới mức sai số chuẩn.
-  \item Thực hiện đối sánh mở rộng với Random Forest và mạng nơ-ron đa tầng (MLP), kiểm chứng định lượng nguyên nhân lỗi theo kích thước, độ sáng, đường cong Coverage--Accuracy và thiết kế ứng dụng Web Demo mô-đun bằng Python Flask.
+  \item Phát hiện và xử lý triệt để rò rỉ dữ liệu theo chuỗi khung hình (track leakage) thông qua StratifiedGroupKFold(5) theo track\_id, đánh giá cả trên Fold 0 và trung bình $\pm$ độ lệch chuẩn qua đủ 5 fold độc lập track~\cite{kaufman2012leakage,pedregosa2011scikit}.
+  \item Thực hiện đánh giá tách bạch 9 tầng biểu diễn đặc trưng (tách riêng ảnh hưởng của ROI, HOG thuần chưa CLAHE, CLAHE, màu sắc HSV/RGB và nén PCA) cùng phép thử nhân trọng số khối màu $\alpha \in \{0; 0{,}25; 0{,}50; 0{,}75; 1{,}0\}$ trên ba thuật toán cốt lõi K-NN, Decision Tree và Gaussian Naive Bayes.
+  \item Đánh giá nghiêm ngặt bằng khoảng tin cậy Bootstrap 95\% ($n=1.000$), kiểm định McNemar hiệu chỉnh đa bội Holm--Bonferroni và tái huấn luyện toàn phần (Full-Train Refit trên toàn bộ 39.209 ảnh Train) trước khi triển khai vào demo.
+  \item Thực hiện đối sánh mở rộng (Random Forest mặc định so với cân bằng trọng số lớp, MLP có đường cong loss hội tụ), phân tích lỗi đa biến (Wilson 95\% CI, hồi quy Logistic, phân tầng tốc độ, kiểm chứng cắt lề 10\% trên 12.630 ảnh Test) và thiết kế Web App Python Flask mô-đun hỗ trợ đồng thời F3-PCA và F5-PCA.
 \end{enumerate}
 
-\subsection{Nguồn dữ liệu, bản quyền và phân tích khám phá (EDA)}
-\IEEEpubidadjcol
-Bộ dữ liệu GTSRB (German Traffic Sign Recognition Benchmark)~\cite{stallkamp2011german,stallkamp2012man} được công bố công khai phục vụ mục đích nghiên cứu học thuật (tại kho dữ liệu gốc của Viện Thần kinh Tin học Ruhr-Universität Bochum qua cổng lưu trữ \url{https://sid.erda.dk/public/archives/daaeac0d7ce1152aea9b61d9f1e19370/} và bản phản chiếu Kaggle \url{https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign}, áp dụng giấy phép dữ liệu công cộng/nghiên cứu CC0). Dữ liệu gồm tổng cộng 51.839 ảnh RGB thuộc 43 lớp: 39.209 ảnh tập huấn luyện gốc (Train) và 12.630 ảnh tập kiểm thử độc lập (Test). Mỗi bản ghi siêu dữ liệu chứa kích thước ảnh (Width, Height), hộp giới hạn vùng chứa biển báo (Roi.X1, Roi.Y1, Roi.X2, Roi.Y2), nhãn lớp (ClassId $\in \{0,\dots,42\}$) và đường dẫn tệp.
+\subsection{Nguồn dữ liệu, điều khoản sử dụng và phân tích khám phá (EDA)}
+Bộ dữ liệu GTSRB (German Traffic Sign Recognition Benchmark)~\cite{stallkamp2011german,stallkamp2012man} do Viện Thần kinh Tin học (Institut für Neuroinformatik -- INI), Trường Đại học Ruhr-Universität Bochum công bố phục vụ miễn phí cho nghiên cứu học thuật (không phải giấy phép CC0; người dùng sử dụng theo điều khoản trích dẫn nghiên cứu của INI tại kho lưu trữ chính thức ERDA \url{https://sid.erda.dk/public/archives/daaeac0d7ce1152aea9b61d9f1e19370/} hoặc bản phản chiếu Kaggle). Dữ liệu gồm 51.839 ảnh RGB thuộc 43 lớp: 39.209 ảnh tập Train và 12.630 ảnh tập Test thu thập độc lập.
 
-Đặc thù cấu trúc quan trọng của GTSRB là tập Train được ghi từ video thành các chuỗi 30 khung hình liên tiếp (track vật lý) quay cùng một biển báo ngoài thực tế (tổng cộng 1.307 track: 1.306 track đủ 30 ảnh và 1 track cuối gồm 29 ảnh), còn tập Test gồm các track thu thập riêng biệt trên tuyến đường và thời điểm khác. Kiểm tra toàn vẹn cho thấy 0 giá trị thiếu và 0 bản ghi trùng lặp.
+Đặc thù cấu trúc quan trọng của GTSRB là tập Train được ghi từ video thành các chuỗi khung hình liên tiếp (track vật lý) quay cùng một biển báo ngoài thực tế (tổng cộng 1.307 track: 1.306 track đủ 30 ảnh và 1 track cuối gồm 29 ảnh), còn tập Test gồm các track thu thập riêng biệt trên tuyến đường và thời điểm khác. Kiểm tra toàn vẹn ghi nhận 0 giá trị thiếu và 0 bản ghi trùng lặp.
 
 \begin{figure*}[!t]
 \centering
@@ -92,71 +106,66 @@ Bộ dữ liệu GTSRB (German Traffic Sign Recognition Benchmark)~\cite{stallka
 Hình~\ref{fig:eda} và Hình~\ref{fig:grid43} phản ánh ba tính chất nổi bật từ bước EDA:
 \begin{itemize}
   \item Mất cân bằng lớp (tỷ lệ 10,7:1): Tập Train có trung bình 911,8 ảnh/lớp; các lớp thiểu số nhất (Lớp 0, Lớp 19 và Lớp 37) chỉ có 210 ảnh, trong khi Lớp 2 đạt 2.250 ảnh (tập Test dao động từ 60 đến 750 ảnh/lớp). Do đó, báo cáo đánh giá đồng thời Accuracy và các chỉ số Macro Precision, Macro Recall, Macro F1-score~\cite{powers2020evaluation}.
-  \item Nhiễu hậu cảnh ngoài ROI: Kích thước ảnh gốc dao động từ $25\times 25$ đến $243\times 225$ pixel (trung vị $43\times 43$ px); hộp giới hạn ROI trung bình chỉ chiếm 56,2\% tổng diện tích ảnh, đồng nghĩa khoảng 43,8\% khung ảnh gốc là hậu cảnh nhiễu cần cắt bỏ.
+  \item Nhiễu hậu cảnh ngoài ROI: Kích thước ảnh gốc dao động từ $25\times 25$ đến $243\times 225$ pixel (trung vị $43\times 43$ px); hộp giới hạn ROI trung bình chiếm 56,2\% diện tích ảnh, đồng nghĩa phần viền ngoài chứa nhiễu hậu cảnh cần cắt bỏ.
   \item Điều kiện ánh sáng thiên tối: Cường độ mức xám trung bình đạt 82,0 $\pm$ 47,6 trên tập Train và 81,4 trên tập Test (thang 0--255), nghiêng rõ rệt về dải ảnh tối dưới 80.
 \end{itemize}
 
 % ==================== SECTION II ====================
 \section{THIẾT KẾ GIẢI PHÁP VÀ QUY TRÌNH HỌC MÁY}
-Hình~\ref{fig:arch} minh họa sơ đồ kiến trúc tổng thể từ khâu thu thập dữ liệu, phân tách chống rò rỉ theo track, tiền xử lý, rút trích đặc trưng F0--F5, tinh chỉnh trên GroupVal, kiểm định một lần trên tập Test khóa cho đến thiết kế ứng dụng Demo tương tác ngoài thực tế.
+Hình~\ref{fig:arch} minh họa kiến trúc tổng thể từ thu thập dữ liệu, phân tách chống rò rỉ theo track, trích xuất 9 tầng đặc trưng, tinh chỉnh 5-fold GroupKFold, tái huấn luyện Full-Train cho đến triển khai ứng dụng Web Flask.
 
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.90\textwidth]{figures/fig0_pipeline_architecture.png}
-\caption{Kiến trúc tổng thể quy trình học máy chống rò rỉ theo track và thiết kế ứng dụng Demo nhận dạng biển báo GTSRB.}
+\caption{Kiến trúc tổng thể quy trình học máy chống rò rỉ theo track, kiểm định chéo 5-fold, Full-Train refit và thiết kế Web Demo Flask.}
 \label{fig:arch}
 \end{figure*}
 
-\subsection{Phân tách dữ liệu theo track và chống rò rỉ dữ liệu}
-Khi sử dụng hàm chia ngẫu nhiên theo từng ảnh (train\_test\_split chuẩn với seed cố định 42), các khung hình kề nhau trong cùng một track 30 ảnh bị phân tán vào cả hai tập Train và Validation. Thực nghiệm đối chứng trên cùng đặc trưng F5 (với K-NN k=5, Euclidean) chứng minh hiện tượng thổi phồng này: cách chia ngẫu nhiên theo khung hình tạo ra điểm Validation đạt 98,66\% dù Test thực tế chỉ đạt 89,75\% (chênh lệch ảo +8,91 điểm \%). Ngược lại, khi nhóm sử dụng StratifiedGroupKFold (5 phần, lấy tập kiểm định đầu tiên) nhóm theo mã track\_id, 31.349 ảnh huấn luyện thuộc 1.045 track và 7.860 ảnh kiểm định (GroupVal) thuộc 262 track hoàn toàn tách biệt (số track giao nhau bằng 0). Khi đó, điểm GroupVal đạt 91,42\%, phản ánh chân thực năng lực tổng quát hóa gần với tập Test (89,18\%).
+\subsection{Phân tách dữ liệu theo track, kiểm định chéo 5-fold và tính trung thực đánh giá}
+Khi chia ngẫu nhiên theo từng ảnh (train\_test\_split chuẩn với seed 42), các khung hình kề nhau trong cùng một track 30 ảnh bị phân tán vào cả Train lẫn Validation: độ chính xác Validation bị thổi phồng lên 98,66\% dù Test chỉ đạt 89,75\% (chênh lệch ảo +8,91 điểm \%). Khi áp dụng StratifiedGroupKFold(5) nhóm theo mã track\_id, Fold 0 tách thành 31.349 ảnh huấn luyện (1.045 track) và 7.860 ảnh kiểm định GroupVal (262 track) với 0 track giao nhau (GroupVal đạt 91,42\% so với Test 89,18\%).
 
-Toàn bộ các bước học tham số thống kê gồm StandardScaler và phép chiếu PCA đều chỉ được khớp (fit) trên tập Train tách track (31.349 ảnh), sau đó biến đổi (transform) sang GroupVal và Test~\cite{kaufman2012leakage}. Algorithm~1 trình bày quy trình thực thi chuẩn, đảm bảo tập Test chỉ được đánh giá duy nhất sau khi chốt xong siêu tham số trên GroupVal.
+Đáng chú ý về mặt phương pháp luận: dù sử dụng GroupKFold, mọi mô hình đều tồn tại khoảng lệch phân phối (domain gap) khoảng 1,1--2,8 điểm \% giữa GroupVal và Test (ví dụ K-NN F3-PCA đạt 92,90\% trên GroupVal so với 90,59\% trên Test; MLP F5 đạt 94,73\% so với 92,77\%) do tập Test được ghi ở tuyến đường và điều kiện camera hoàn toàn khác với Train. Trong suốt thực nghiệm, toàn bộ siêu tham số ($k$, khoảng cách, trọng số, độ sâu cây, số chiều PCA, cấu hình MLP/RF và ngưỡng $\tau$) chỉ được lựa chọn dựa trên GroupVal và kiểm định chéo 5-fold CV; tập Test không tham gia chọn tham số nhưng được dùng để báo cáo đối chứng trong các bảng tách bạch đặc trưng (Bảng~\ref{tab:exp1}) và bảng so sánh mô hình (Bảng~\ref{tab:exp5}).
 
 \begin{table}[!t]
 \centering
 \small
 \begin{tabular}{@{}p{0.96\columnwidth}@{}}
 \hline
-\textbf{Algorithm 1} Quy trình phân tách track không rò rỉ \\
+\textbf{Algorithm 1} Quy trình phân tách track, tinh chỉnh GroupVal \& Full-Train Refit \\
 \hline
 \textbf{Input:} Tập Train (39.209 ảnh, 1.307 track), tập Test (12.630 ảnh), PCA d=128. \\
-\textbf{Output:} Mô hình tối ưu, khoảng tin cậy 95\% CI và độ đo trên Test khóa. \\
+\textbf{Output:} Cấu hình tối ưu trên 5-Fold GroupKFold, mô hình Full-Train và 95\% CI. \\
 1: Gán mã track\_id = ClassId + TrackPrefix cho toàn bộ 39.209 ảnh Train. \\
-2: Tách StratifiedGroupKFold(5) theo track\_id $\rightarrow$ Train (31.349) và GroupVal (7.860). \\
-3: Trích xuất đặc trưng F0--F4 (ROI, Resize $32\times 32$, CLAHE, HOG, HSV/RGB). \\
-4: Khớp StandardScaler và PCA (svd\_solver=full) duy nhất trên dữ liệu Train. \\
-5: Biến đổi dữ liệu Train, GroupVal và Test sang biểu diễn float32. \\
-6: Quét lưới siêu tham số (Exp 2--4) chỉ dùng GroupVal Accuracy/Macro-F1 để chọn cấu hình. \\
-7: Đánh giá một lần trên tập Test khóa (12.630 ảnh) kèm Bootstrap 95\% CI và McNemar. \\
+2: Chia StratifiedGroupKFold(5) theo track\_id (Fold 0: 31.349 vs 7.860 ảnh). \\
+3: Rút trích F0--F4 (ROI, Resize $32\times 32$, CLAHE, HOG, HSV/RGB) và F3\_noCLAHE. \\
+4: Khớp StandardScaler và PCA (svd\_solver=full) duy nhất trên dữ liệu Train mỗi fold. \\
+5: Chốt siêu tham số K-NN ($k=1..31$), DT, PCA $d$, MLP, RF và $\tau$ chỉ bằng GroupVal/5-fold CV. \\
+6: Đánh giá Test đối sánh 80\%-Train kèm Bootstrap 95\% CI và McNemar (Holm--Bonferroni). \\
+7: Tái huấn luyện Full-Train (toàn bộ 39.209 ảnh / 1.307 track) cho mô hình triển khai demo. \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection{Tiền xử lý và trích xuất các tầng đặc trưng (F0--F5)}
-Mỗi ảnh RGB đi qua các bước tiền xử lý chuẩn hóa tuần tự: (1) cắt theo khung ROI khi kích hoạt; (2) thu phóng đồng nhất về $32\times 32$ bằng nội suy vùng INTER\_AREA~\cite{bradski2000opencv}; (3) chuyển sang không gian màu LAB và cân bằng sáng cục bộ CLAHE (clipLimit=2,0, tileGridSize=(4,4)) trên kênh độ chói $L$~\cite{zuiderveld1994contrast} trước khi đưa về RGB (Hình~\ref{fig:preproc}). Một lưu ý kỹ thuật quan trọng là phép cân bằng CLAHE làm thay đổi trực tiếp phân phối giá trị sáng trên kênh $L$, từ đó biến đổi phân phối thành phần $V$ khi chuyển sang HSV; tác động này được kiểm chứng riêng giữa F4\_noCLAHE và F4.
+\subsection{Tiền xử lý, 9 tầng đặc trưng (F0--F5) và phép thử trọng số màu \texorpdfstring{$\alpha$}{alpha}}
+Mỗi ảnh RGB đi qua các bước tiền xử lý tuần tự: (1) cắt theo hộp ROI (khi kích hoạt); (2) thu phóng về $32\times 32$ bằng nội suy vùng INTER\_AREA~\cite{bradski2000opencv}; (3) chuyển sang LAB và cân bằng sáng cục bộ CLAHE (clipLimit=2,0, tileGridSize=(4,4)) trên kênh $L$~\cite{zuiderveld1994contrast}. Vì CLAHE biến đổi phân phối độ chói $L$, thành phần giá trị $V$ trong không gian màu HSV cũng thay đổi theo.
 
-Để đánh giá định lượng đóng góp từng thành phần, nhóm xây dựng 8 cấu hình biểu diễn đặc trưng (đều đi qua StandardScaler khớp trên tập Train):
+Để tách bạch tác động của từng thành phần, nhóm xây dựng 9 cấu hình đặc trưng (đều đi qua StandardScaler khớp trên tập Train):
 \begin{itemize}
-  \item F0 (1.024 chiều): Ảnh xám toàn khung $32\times 32$ không cắt ROI, chia 255 về $[0,1]$.
-  \item F1 -- Baseline (1.024 chiều): Cắt ROI, resize $32\times 32$, chuyển xám và chia 255 về $[0,1]$.
+  \item F0 (1.024 chiều) \& F1 -- Baseline (1.024 chiều): Ảnh xám $32\times 32$ lần lượt giữ toàn khung (F0) và cắt ROI (F1).
   \item F2 (3.072 chiều): Ảnh màu RGB $32\times 32\times 3$ đã cắt ROI.
-  \item F3 -- HOG (1.764 chiều): Rút trích biểu đồ định hướng gradient cục bộ~\cite{dalal2005histograms,walt2014scikit} trên ảnh xám sau CLAHE (9 hướng, ô $4\times 4$ px, khối $2\times 2$ ô, chuẩn hóa L2-Hys và biến đổi căn bậc hai):
+  \item F3\_noCLAHE (1.764 chiều) \& F3 (1.764 chiều): Biểu đồ HOG (9 hướng, ô $4\times 4$ px, khối $2\times 2$ ô, chuẩn hóa L2-Hys)~\cite{dalal2005histograms,walt2014scikit} lần lượt không áp CLAHE (F3\_noCLAHE) và có áp CLAHE (F3):
   \begin{equation}
   M=\sqrt{G_x^2+G_y^2},\quad \theta=\operatorname{atan2}(G_y,G_x)
   \end{equation}
-  \begin{equation}
-  v_{\text{norm}} = \frac{v}{\sqrt{\|v\|_2^2 + \epsilon^2}} \qquad (\text{ngưỡng cắt } \le 0{,}2)
-  \end{equation}
-  \item F3-PCA (128 chiều): Nén vector F3 (1.764 chiều HOG thuần) bằng PCA chính xác (svd\_solver=full) xuống 128 chiều (giữ 64,63\% phương sai) nhằm tách riêng tác động của nén chiều với tác động của màu sắc.
-  \item F4 -- HOG + Màu sắc (1.860 chiều) và F4 (Không CLAHE): Ghép 1.764 chiều HOG với 96 chiều màu sắc/cường độ sáng~\cite{bradski2000opencv} gồm: 32 ngăn biểu đồ biên HSV (16 Hue + 8 Saturation + 8 Value chuẩn hóa), 48 chiều lưới màu RGB $4\times 4$ và 16 chỉ số thống kê toàn cục (trung bình, độ lệch chuẩn RGB/HSV và 4 tỷ lệ điểm ảnh vùng đỏ, xanh lam, vàng, tối):
+  \item F3-PCA (128 chiều): Chiếu F3 (1.764 chiều HOG thuần) qua PCA(svd\_solver=full) xuống 128 chiều (giữ 64,63\% phương sai).
+  \item F4\_noCLAHE (1.860 chiều) \& F4 (1.860 chiều): Ghép 1.764 chiều HOG với 96 chiều màu (32 chiều histogram HSV, 48 chiều lưới RGB $4\times 4$, 16 thống kê toàn cục):
   \begin{equation}
   x_{\text{F4}} = \left[\,f_{\text{HOG}};\; h_{\text{HSV}};\; g_{4\times 4}^{\text{RGB}};\; s_{\text{stat}}\,\right] \in \mathbb{R}^{1860}
   \end{equation}
-  \item F5 -- F4 + PCA (128 chiều): Chuẩn hóa vector F4 qua StandardScaler và chiếu qua 128 thành phần chính (svd\_solver=full, giữ 64,74\% tổng phương sai)~\cite{jolliffe2016principal}:
-  \begin{equation}
-  z = \tilde{x}W_d, \qquad \text{EVR}(d) = \frac{\sum_{i=1}^d \lambda_i}{\sum_{j=1}^D \lambda_j}
-  \end{equation}
+  \item F5 (128 chiều): Chiếu vector F4 đã chuẩn hóa qua 128 thành phần chính PCA (giữ 64,74\% phương sai)~\cite{jolliffe2016principal}.
 \end{itemize}
+
+Ngoài ra, để kiểm chứng giả thuyết ``StandardScaler đưa phương sai 96 chiều màu ngang bằng 1.764 chiều HOG khiến nhiễu màu lấn át hình dạng'', nhóm chạy phép thử nhân trọng số khối màu sau chuẩn hóa bằng hệ số $\alpha \in \{0{,}0; 0{,}25; 0{,}50; 0{,}75; 1{,}0\}$ dưới dạng $[\tilde{f}_{\text{HOG}};\; \alpha\,\tilde{c}_{\text{color}}]$ rồi đo hiệu năng K-NN ($k=11$, Euclidean) trước và sau PCA 128 chiều.
 
 \begin{figure}[!t]
 \centering
@@ -166,66 +175,53 @@ Mỗi ảnh RGB đi qua các bước tiền xử lý chuẩn hóa tuần tự: (
 \end{figure}
 
 \subsection{Các thuật toán phân loại và cấu hình siêu tham số}
-Các thuật toán được chuẩn hóa đầy đủ tham số để đảm bảo tái lập 100\%:
+Các thuật toán được cố định đầy đủ tham số tái lập (random\_state=42):
 \begin{enumerate}
-  \item K-Nearest Neighbors (K-NN)~\cite{cover1967nearest,han2011data}: Sử dụng algorithm=brute, n\_jobs=-1 và quy tắc bỏ phiếu trọng số:
-  \begin{equation}
-  \hat{y}(z) = \arg\max_{c \in \{0,\dots,42\}} \sum_{z_i \in \mathcal{N}_k(z)} \frac{\mathbb{I}(y_i = c)}{d(z, z_i) + \epsilon}
-  \end{equation}
-  \item Cây quyết định (Decision Tree)~\cite{breiman1984classification}: Khảo sát tiêu chí Entropy và Gini với random\_state=42:
-  \begin{equation}
-  H(S) = -\sum_{c=0}^{42} p_c \log_2 p_c, \qquad G(S) = 1 - \sum_{c=0}^{42} p_c^2
-  \end{equation}
-  \item Gaussian Naive Bayes (GNB)~\cite{mitchell1997machine}: Áp dụng phân phối chuẩn độc lập có điều kiện trên từng lớp (thực nghiệm trên cả F0--F5).
-  \item Mô hình mở rộng: Random Forest~\cite{breiman2001random} (n\_estimators=200, criterion=gini, max\_depth=None, min\_samples\_\allowbreak split=2, min\_samples\_\allowbreak leaf=1, max\_features=sqrt, class\_weight=None, random\_state=42, n\_jobs=-1) và MLPClassifier (hidden\_layer\_\allowbreak sizes=(256, 128), activation=relu, solver=adam, alpha=$10^{-4}$, batch\_size=256, learning\_rate\_\allowbreak init=$10^{-3}$, max\_iter=30, early\_stopping=False, random\_state=42). Đáng chú ý, nhóm chủ động đặt early\_stopping=False ở MLP để tránh hàm fit tự tách 10\% validation nội bộ ngẫu nhiên theo khung hình gây rò rỉ track gián tiếp.
+  \item K-Nearest Neighbors (K-NN)~\cite{cover1967nearest,han2011data}: Khảo sát đầy đủ $k \in \{1, 3, 5, 7, 11, 15, 21, 31\}$, trọng số uniform và distance, hệ đo Euclidean, Manhattan và Cosine (algorithm=brute).
+  \item Decision Tree~\cite{breiman1984classification} \& Gaussian Naive Bayes~\cite{mitchell1997machine}: DT khảo sát criterion $\in \{\text{gini}, \text{entropy}\}$, độ sâu $5..30$ và None; GNB đánh giá trên tất cả không gian đặc trưng.
+  \item Mô hình mở rộng: Random Forest~\cite{breiman2001random} (200 cây, đối chiếu class\_weight=None và balanced\_subsample) và MLPClassifier (khảo sát hidden\_layer\_sizes $\in \{(128,), (256, 128)\}$, max\_iter $\in \{30, 50\}$, adam, alpha=$10^{-4}$, batch\_size=256, early\_stopping=False để tránh tách validation ngẫu nhiên nội bộ gây rò rỉ track).
 \end{enumerate}
 
-\subsection{Thiết kế kiến trúc ứng dụng Web Demo nhận dạng biển báo}
-Để hoàn thiện sản phẩm theo hướng dẫn học phần (Mục 2.4) và đảm bảo kiến trúc phần mềm sạch sẽ, dễ bảo trì thay vì dồn mã nguồn vào một tệp đơn lẻ, nhóm thiết kế ứng dụng Web theo mô hình phân tầng Flask~\cite{grinberg2018flask} gồm gói mô-đun webapp/ (cấu hình, tầng dịch vụ suy luận, tầng điều tuyến Blueprints, giao diện HTML/CSS/JS) và điểm khởi chạy gọn nhẹ app\_demo.py (Hình~\ref{fig:demo_design}). Kiến trúc thiết kế gồm bốn thành phần phối hợp chặt chẽ:
-\begin{enumerate}
-  \item Phân tách nghiệp vụ rõ ràng (Layered Architecture): Tầng cấu hình (webapp/config.py) định nghĩa danh mục mẫu và ngưỡng an toàn ADAS mặc định $\tau = 0{,}70$; tầng dịch vụ (model\_registry.py, image\_processor.py, predictor.py) quản lý nạp đơn nhất (singleton) mô hình models/\allowbreak gtsrb\_\allowbreak pipeline.joblib, cắt lề 10\% (crop\_\allowbreak center\_margin) và tính toán đặc trưng; tầng định tuyến (routes/views.py, routes/api.py) cung cấp cả trang Dashboard lẫn các REST API (/api/predict, /api/samples, /api/metrics).
-  \item Chẩn đoán chất lượng ảnh và trực quan hóa 4 bước (Explainability): Khi người dùng kéo thả ảnh thực tế hoặc chọn một trong 8 ảnh mẫu (sample\_images/), hệ thống tự động đo kích thước gốc, độ sáng trung bình và phân bố 4 nhóm màu chủ đạo (Đỏ, Xanh lam, Vàng, Tối), đồng thời hiển thị chuỗi 4 bước xử lý: Ảnh gốc $\rightarrow$ Resize $32\times 32$ $\rightarrow$ Cân bằng CLAHE $\rightarrow$ Bản đồ nhiệt HOG.
-  \item Suy luận đồng thuận đa mô hình \& kiểm soát ngưỡng an toàn ADAS ($\tau$): Hệ thống chiếu vector F5 (128 chiều) một lần để truy vấn đồng thời K-NN, Decision Tree và MLP, trả về xếp hạng Top-5 kèm ma trận kiểm thử trực tiếp 8 ảnh mẫu, độ trễ mili-giây và thanh trượt điều chỉnh ngưỡng $\tau \in [0{,}30; 0{,}95]$ giúp phát hiện kịp thời các mẫu nhập nhằng.
-  \item Cảnh báo hiệu chuẩn xác suất hậu nghiệm: Giao diện hiển thị ghi chú minh bạch rằng giá trị phần trăm là điểm bỏ phiếu nghịch đảo (K-NN), độ tinh khiết nút lá (DT) hoặc softmax (MLP) chưa hiệu chuẩn xác suất hậu nghiệm, làm căn cứ kết hợp ngưỡng $\tau$ trước khi cảnh báo ADAS. Ứng dụng khởi chạy cục bộ qua lệnh python app\_demo.py (cổng 7860).
-\end{enumerate}
+\subsection{Thiết kế kiến trúc ứng dụng Web Demo Flask}
+Thay vì viết gộp một tệp đơn lẻ, nhóm thiết kế Web App theo kiến trúc phân tầng Flask~\cite{grinberg2018flask} (Hình~\ref{fig:demo_design}) gồm điểm khởi chạy app\_demo.py (cổng 7860) và gói webapp/: (1) config.py lưu cấu hình 5 mô hình Full-Train (K-NN F3-PCA, MLP F3-PCA, K-NN F5, DT F5, MLP F5), danh mục 10 mẫu kiểm thử (8 mẫu GTSRB + 2 ảnh ngoại cảnh chưa cắt sát) và ngưỡng $\tau = 0{,}70$; (2) tầng services/ nạp singleton gtsrb\_pipeline.joblib, cung cấp hàm crop\_center\_margin(0,10) dùng chung từ src/features.py và trích xuất song song cả vector F3-PCA lẫn F5-PCA; (3) tầng routes/ phục vụ giao diện Dashboard lẫn REST API (/api/predict, /api/samples, /api/metrics); và (4) giao diện hiển thị chuỗi 4 bước xử lý, Top-5 dự đoán, đồng thuận 5 mô hình kèm cảnh báo điểm số chưa hiệu chuẩn xác suất hậu nghiệm.
 
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.68\textwidth]{figures/fig12_demo_app_design.png}
-\caption{Thiết kế giao diện Web Dashboard mô-đun bằng Python Flask (gói webapp/ \& app\_demo.py): (trái) Tải ảnh/chọn mẫu, điều chỉnh ngưỡng $\tau$ và chẩn đoán chất lượng ảnh; (phải) Chuỗi trực quan 4 bước, Top-5 dự đoán, đồng thuận K-NN/DT/MLP và ma trận kiểm thử 8 ảnh mẫu.}
+\caption{Giao diện thực tế ứng dụng Web Demo Python Flask (gói webapp/ \& app\_demo.py): nạp trực tiếp 5 mô hình Full-Train (F3-PCA \& F5-PCA), trực quan 4 bước, ngưỡng ADAS $\tau$ và ma trận 10 mẫu (8 GTSRB + 2 ngoại cảnh).}
 \label{fig:demo_design}
 \end{figure*}
 
 % ==================== SECTION III ====================
-\section{PHÂN TÍCH MÃ NGUỒN VÀ CHỨC NĂNG}
+\section{PHÂN TÍCH MÃ NGUỒN VÀ TÁI LẬP THỰC NGHIỆM}
 
-\subsection{Tổ chức kho mã nguồn, môi trường và tái lập thực nghiệm}
-Mã nguồn dự án được lưu trữ công khai tại \url{https://github.com/Chieenslee/FIT4013-CNTT-1810-NHOM-6}, đi kèm tệp khai báo thư viện requirements.txt và hướng dẫn tái lập, tổ chức tách bạch thành hai gói mô-đun độc lập là src/ (huấn luyện \& đánh giá) và webapp/ (ứng dụng Web Demo chạy qua lệnh python app\_demo.py):
+\subsection{Tổ chức kho mã nguồn, môi trường cố định phiên bản và kiểm thử tự động}
+Toàn bộ mã nguồn được công khai tại \url{https://github.com/Chieenslee/FIT4013-CNTT-1810-NHOM-6} kèm giấy phép LICENSE (MIT cho mã nguồn, lưu ý trích dẫn INI cho dữ liệu GTSRB), tệp AI\_USAGE.md, tệp requirements.txt cố định chính xác phiên bản môi trường thực nghiệm (numpy==2.4.4, scikit-learn==1.8.0, opencv-python==4.13.0) và bộ kiểm thử đơn vị tests/test\_project.py:
 \begin{itemize}
-  \item src/constants.py và src/data\_loader.py: Bảng ánh xạ song ngữ 43 lớp; hàm prepare\_\allowbreak gtsrb\_csvs tổng hợp Train.csv/Test.csv từ dữ liệu tải về và hỗ trợ đọc ảnh an toàn trên đường dẫn Unicode.
-  \item src/features.py: Cung cấp các hàm độc lập crop\_roi\_image, apply\_clahe\_rgb, extract\_raw\_gray, extract\_raw\_rgb, extract\_hog\_features và extract\_hog\_\allowbreak color\_features xuất vector kiểu float32 dùng chung cho cả pipeline huấn luyện và tầng dịch vụ Web.
-  \item src/pipeline.py: Điều phối phân tách StratifiedGroupKFold theo extract\_track\_ids, tiền xử lý chống rò rỉ (prepare\_\allowbreak scaled\_split), quét lưới GroupVal, đánh giá một lượt tập Test kèm Bootstrap 95\% CI và McNemar, xuất tệp kết quả JSON/CSV, gtsrb\_\allowbreak pipeline.joblib và các biểu đồ PNG.
-  \item Gói ứng dụng Web webapp/ và app\_demo.py: Phân lớp rõ ràng gồm webapp/config.py (tham số \& danh mục biển báo), webapp/services/ (model\_\allowbreak registry.py, image\_\allowbreak processor.py, predictor.py), webapp/routes/ (views.py, api.py), giao diện tách file (templates/base.html, templates/index.html, static/css/main.css, static/js/app.js) và điểm khởi chạy gọn nhẹ app\_demo.py.
-  \item notebooks/\allowbreak FIT4013\_Nhom6\_\allowbreak DeTai6\_GTSRB\_Colab.ipynb: Sổ tay 8 bước tự động tải trực tiếp 3 tệp nén GTSRB từ máy chủ gốc ERDA, kiểm tra độ sạch, chạy toàn bộ quy trình thực nghiệm và lưu kết quả minh chứng thực thi trên Google Colab.
+  \item src/data\_loader.py: Tích hợp hàm download\_\allowbreak{}gtsrb\_dataset tự động tải và giải nén 3 kho zip chính thức từ sid.erda.dk, sau đó sinh Train.csv/Test.csv hỗ trợ đọc ảnh Unicode.
+  \item src/features.py: Tách hàm dùng chung crop\_\allowbreak{}center\_margin, crop\_roi\_image, apply\_clahe\_rgb, extract\_\allowbreak{}hog\_features, extract\_\allowbreak{}color\_features và extract\_hog\_\allowbreak{}color\_features.
+  \item src/pipeline.py: Thực hiện StratifiedGroupKFold, 9 tầng đặc trưng Exp 1, ablation $\alpha$, lưới K-NN mở rộng $k=1..31$, 5-fold CV, tinh chỉnh MLP/RF, tái huấn luyện Full-Train 39.209 ảnh, kiểm định Holm--Bonferroni, Wilson 95\% CI và hồi quy Logistic.
+  \item webapp/, app\_demo.py \& tests/test\_project.py: Giao diện Web Flask mô-đun và bộ kiểm thử tự động kiểm tra rò rỉ track=0, kích thước vector, khớp khóa bundle F3-PCA/F5 và mọi REST API.
+  \item notebooks/\allowbreak{}FIT4013\_Nhom6\_\allowbreak{}DeTai6\_GTSRB\_Colab.ipynb: Sổ tay Colab 8 bước chạy đầu--cuối (từ git clone, pip install, tải GTSRB từ ERDA đến kiểm thử Flask \& unittest).
 \end{itemize}
 
-Thực nghiệm được chuẩn hóa trên môi trường phần cứng CPU phổ thông của Google Colab (Google Colab CPU (2 vCPU Intel Xeon, 12.7 GB RAM)) với bộ thư viện Python 3.13.7, NumPy 2.4.4, Pandas 2.3.3, scikit-learn 1.8.0, scikit-image 0.26.0, OpenCV 4.13.0. Tệp requirements.txt quy định phiên bản tối thiểu (numpy $\ge 1.24$, pandas $\ge 2.0$, scikit-learn $\ge 1.3$, opencv-python $\ge 4.8$, scikit-image $\ge 0.21$, joblib $\ge 1.3$, flask $\ge 3.0$).
+Thực nghiệm toàn phần được tái lập trong môi trường Python 3.13.7, NumPy 2.4.4, Pandas 2.3.3, scikit-learn 1.8.0, scikit-image 0.26.0, OpenCV 4.13.0.
 
 % ==================== SECTION IV ====================
 \section{THỬ NGHIỆM VÀ KẾT QUẢ}
 
-\subsection{Thí nghiệm 1: Đánh giá tách bạch 8 tầng đặc trưng (F0--F5)}
-Bảng~\ref{tab:exp1} trình bày đầy đủ hiệu năng của cả 3 thuật toán bắt buộc (K-NN k=5 Euclidean, Decision Tree max\_depth=20 Gini, và Gaussian Naive Bayes) qua 8 phương án biểu diễn đặc trưng. Bốn quy luật thực nghiệm rõ rệt rút ra gồm:
+\subsection{Thí nghiệm 1: Đánh giá tách bạch 9 tầng đặc trưng và kiểm chứng trọng số màu \texorpdfstring{$\alpha$}{alpha}}
+Bảng~\ref{tab:exp1} tổng hợp hiệu năng 3 thuật toán cốt lõi trên 9 cấu hình biểu diễn đặc trưng, qua đó kiểm chứng định lượng bốn cơ chế sau:
 \begin{enumerate}
-  \item Tác động của bước cắt ROI (F0 $\rightarrow$ F1): Loại bỏ hậu cảnh ngoài ROI nâng K-NN Test từ 33,55\% lên 50,59\% (+17,04 điểm \%), DT từ 50,22\% lên 56,48\% và GNB từ 9,51\% lên 14,18\%.
-  \item Tại sao Decision Tree vượt K-NN trên pixel thô (F0--F2) rồi đảo ngược trên F3--F5: Trên không gian pixel thô, khoảng cách Euclidean của K-NN cộng dồn sai số điểm ảnh do dịch chuyển 2--3 px hoặc đổi bóng đổ trên cả 1.024--3.072 chiều, khiến K-NN chỉ đạt 50,59\% (F1) và 52,89\% (F2). Ngược lại, Decision Tree chọn lọc một số vị trí pixel đặc trưng mang độ lợi thông tin cao ở tâm và viền biển báo nên thắng K-NN trên F0--F2 (50,22\%, 56,48\%, 57,55\%). Khi chuyển sang HOG (F3), tương quan hình học cục bộ giúp K-NN nhảy vọt thêm +39,27 điểm \% lên 89,86\% (Macro-F1 87,00\%), trong khi DT bị giới hạn bởi lát cắt trục tọa độ nên dừng ở 72,05\%.
-  \item Vai trò thật của Đặc trưng màu sắc (F3 $\rightarrow$ F4 và F3-PCA $\rightarrow$ F5): Với K-NN, việc ghép thêm 96 chiều màu ở F4 khiến Test Accuracy giảm nhẹ từ 89,86\% xuống 89,34\% (Macro-F1 từ 87,00\% xuống 86,03\%, McNemar p = 0,0050), và trên không gian PCA 128 chiều F3-PCA (90,02\%) cũng cao hơn F5 (89,18\%). Nguyên nhân là StandardScaler đưa phương sai toàn bộ 96 chiều màu nhạy ánh sáng bằng 1 ngang bằng các cạnh HOG, làm nhiễu phép đo khoảng cách láng giềng. Ngược lại, Decision Tree (chọn lọc ngưỡng từng kênh riêng biệt) tăng từ 72,05\% lên 72,32\%, và GNB tăng từ 81,01\% lên 81,37\%.
-  \item Vai trò của CLAHE (F4 Không CLAHE $\rightarrow$ F4): Cân bằng sáng CLAHE giúp K-NN cải thiện +0,92 điểm \% (từ 88,42\% lên 89,34\%, kiểm định McNemar p = $5{,}68\times 10^{-5}$), còn GNB tăng từ 80,32\% lên 81,37\%. Đồng thời, khi đưa qua PCA 128 chiều (F5), Gaussian Naive Bayes nhảy vọt từ 14,18\% trên pixel thô lên 88,20\% (Macro-F1 85,57\%).
+  \item Đóng góp của ROI (F0 $\rightarrow$ F1): Loại bỏ phần nền ngoài ROI nâng K-NN Test từ 33,55\% lên 50,59\% (+17,04 điểm \%), DT từ 50,22\% lên 56,48\% và GNB từ 9,51\% lên 14,18\%.
+  \item Tách riêng đóng góp của HOG thuần (F1 $\rightarrow$ F3\_noCLAHE) và CLAHE (F3\_noCLAHE $\rightarrow$ F3): Chỉ riêng đặc trưng HOG (không dùng CLAHE) đã tạo bước nhảy +38,87 điểm \% trên K-NN (từ 50,59\% lên 89,45\%, Macro-F1 86,35\%, McNemar $p_{\text{Holm}} < 10^{-300}$) và nâng DT lên 73,86\%. Khi bổ sung CLAHE (F3), K-NN tăng thêm +0,40 điểm \% lên 89,86\% ($p_{\text{Holm}} = 0,1717$); trên cặp F4\_noCLAHE $\rightarrow$ F4 K-NN tăng từ 88,42\% lên 89,34\% ($p_{\text{Holm}} = 0,0005$). Trái lại, CLAHE làm Decision Tree giảm trên cả F3 (73,86\% $\rightarrow$ 72,05\%) lẫn F4 (73,87\% $\rightarrow$ 72,32\%, giảm 1,55 điểm \%, $p_{\text{Holm}} = 0,0019$) do phân ngưỡng histogram cục bộ làm xê dịch nhẹ giá trị điểm ảnh giữa các vùng phẳng.
+  \item Vai trò thật của Đặc trưng màu sắc (F3 $\rightarrow$ F4 và F3-PCA $\rightarrow$ F5): Trái với kỳ vọng trực quan, ghép 96 chiều màu không đem lại cải thiện đồng nhất. Trên K-NN, F4 (89,34\%) thấp hơn F3 (89,86\%, $p_{\text{Holm}} = 0,0303$), và F5 (89,18\%) thấp hơn F3-PCA (90,02\%). Đáng chú ý hơn, ngay cả trên Decision Tree và GNB sau khi qua PCA 128 chiều, F5 đều giảm so với F3-PCA (DT: 68,58\% $\rightarrow$ 68,04\%; GNB: 88,37\% $\rightarrow$ 88,20\%). Trên không gian chưa PCA, mức nhích của DT (72,05\% $\rightarrow$ 72,32\%, +0,27 điểm \%) và GNB (81,01\% $\rightarrow$ 81,37\%, +0,36 điểm \%) đều nhỏ (McNemar DT $p_{\text{Holm}} = 0,4230$).
+  \item Kết quả kiểm chứng trọng số màu $\alpha$ (Hình~\ref{fig:ablation_loss}a): Khi giảm dần hệ số $\alpha$ từ 1,0 về 0,0 trên vector $[\tilde{f}_{\text{HOG}}; \alpha\tilde{c}_{\text{color}}]$, độ chính xác K-NN ($k=11$, Euclidean) tăng gần như đơn điệu: bản 1.860 chiều tăng từ 89,81\% ($\alpha=1{,}0$) lên 90,77\% ($\alpha=0{,}0$); bản PCA 128 chiều tăng từ 89,79\% ($\alpha=1{,}0$) lên 90,62\% ($\alpha=0{,}50$) và 90,45\% ($\alpha=0{,}0$). Điều này khẳng định trực tiếp giả thuyết rằng cân bằng phương sai đồng mức của StandardScaler đã để biến thiên màu nhạy ánh sáng làm nhiễu không gian khoảng cách HOG.
 \end{enumerate}
 
 \begin{table*}[!t]
 \centering
-\caption{Thí nghiệm 1 -- So sánh tách bạch 8 tầng biểu diễn đặc trưng trên cả 3 thuật toán cốt lõi (K-NN k=5, DT depth=20, GNB)}
+\caption{Thí nghiệm 1 -- So sánh tách bạch 9 tầng đặc trưng (gồm F3 không CLAHE và F3-PCA) trên 3 thuật toán cốt lõi}
 \label{tab:exp1}
 \footnotesize
 \resizebox{\textwidth}{!}{%
@@ -236,6 +232,7 @@ Bảng~\ref{tab:exp1} trình bày đầy đủ hiệu năng của cả 3 thuật
 F0: No-ROI Raw Grayscale (1024) & 1024 & 33,98\% & 33,55\% & 28,39\% & 50,22\% & 9,51\% & 10,65\% \\
 F1: ROI Raw Grayscale - Baseline (1024) & 1024 & 50,84\% & 50,59\% & 43,76\% & 56,48\% & 14,18\% & 15,23\% \\
 F2: ROI Raw RGB (3072) & 3072 & 52,99\% & 52,89\% & 46,35\% & 57,55\% & 17,32\% & 19,25\% \\
+F3 (Không CLAHE): ROI + HOG Không CLAHE (1764) & 1764 & 92,43\% & 89,45\% & 86,35\% & 73,86\% & 80,34\% & 80,00\% \\
 F3: ROI + CLAHE + HOG (1764) & 1764 & 92,30\% & 89,86\% & 87,00\% & 72,05\% & 81,01\% & 80,80\% \\
 F3-PCA: ROI + CLAHE + HOG + PCA (128) & 128 & 92,06\% & 90,02\% & 87,23\% & 68,58\% & 88,37\% & 85,47\% \\
 F4 (Không CLAHE): ROI + HOG + Color (1860) & 1860 & 91,50\% & 88,42\% & 85,04\% & 73,87\% & 80,32\% & 79,13\% \\
@@ -246,12 +243,16 @@ F5: ROI + CLAHE + HOG + Color + PCA (128) & 128 & 91,42\% & 89,18\% & 86,05\% & 
 }
 \end{table*}
 
-\subsection{Thí nghiệm 2 \& 3: Tinh chỉnh K-NN (30 cấu hình) và DT (12 cấu hình) trên GroupVal}
-Tuân thủ nghiêm ngặt kỷ luật không xem tập Test khi chọn tham số, Bảng~\ref{tab:exp23} và Hình~\ref{fig:hp_tuning} tổng hợp kết quả lưới đầy đủ $5\times 2\times 3 = 30$ cấu hình K-NN và 12 cấu hình Decision Tree đánh giá hoàn toàn trên GroupVal (262 track, 7.860 ảnh). Trên K-NN (F5), hàm trọng số nghịch đảo khoảng cách (distance) luôn vượt trội bỏ phiếu đều (uniform), và độ đo Euclidean đạt đỉnh GroupVal tại k=11 (distance) với 92,24\% Accuracy (88,94\% Macro-F1), nhỉnh nhẹ so với Manhattan (92,19\%) và cao hơn Cosine ở mọi mức k $\ge$ 3. Với Decision Tree, hiện tượng overfitting bộc lộ rõ khi Train đạt 100,00\% tại depth=20 nhưng GroupVal đạt đỉnh tại criterion=entropy, max\_depth=15 (70,13\% Accuracy, 62,43\% Macro-F1) rồi suy giảm nhẹ từ depth $\ge$ 20. Hai cấu hình tối ưu trên GroupVal được chốt cố định để đánh giá một lần cuối trên Test.
+\subsection{Thí nghiệm 2 \& 3: Lưới K-NN mở rộng (\texorpdfstring{$k=1..31$}{k=1..31}), DT và 5-Fold GroupKFold CV}
+Để khắc phục hạn chế của lưới $k \in \{1..11\}$ bị chạm biên phải $k=11$, nhóm mở rộng lưới K-NN lên $k \in \{1, 3, 5, 7, 11, 15, 21, 31\}$ (48 cấu hình trên F5 kèm Train Acc, và 21 cấu hình distance trên F3-PCA), đánh giá duy nhất trên GroupVal Fold 0 và kiểm chứng chéo trên đủ 5 fold StratifiedGroupKFold. Bảng~\ref{tab:exp23} và Hình~\ref{fig:hp_tuning} cho thấy:
+\begin{itemize}
+  \item Trên GroupVal Fold 0, K-NN đạt đỉnh mới tại $k=21$ (distance, Euclidean) trên F5 (92,49\%) và $k=21$ (distance, Manhattan) trên F3-PCA (92,90\%) rồi chững/giảm nhẹ tại $k=31$, chứng tỏ phổ tìm kiếm $k \in [1; 31]$ đã bao phủ cực đại lân cận. Trong bảng tham số, cấu hình distance cho Train Acc = 100,00\%, còn uniform giảm dần từ 100,00\% ($k=1$) xuống 98,68\% ($k=21$).
+  \item Trên kiểm định chéo đầy đủ 5-fold StratifiedGroupKFold (Hình~\ref{fig:hp_tuning}a): với cùng độ đo Euclidean, K-NN F3-PCA đạt trung bình 92,15 $\pm$ 0,56\%, cao hơn K-NN F5 ở mức 91,51 $\pm$ 0,70\% ($k=21$) và 91,49 $\pm$ 0,62\% ($k=31$). Đáng chú ý, Random Forest cân bằng trọng số (balanced\_subsample) cải thiện độ ổn định Macro-F1 trên 5 fold so với mặc định (83,03 $\pm$ 0,70\% so với 81,96 $\pm$ 1,18\%), còn MLP 5-fold CV đạt 94,02 $\pm$ 0,42\% (F3-PCA) và 94,16 $\pm$ 0,38\% (F5).
+\end{itemize}
 
 \begin{table*}[!t]
 \centering
-\caption{Thí nghiệm 2 \& 3 -- Kết quả tinh chỉnh siêu tham số K-NN và Decision Tree đánh giá duy nhất trên GroupVal (F5)}
+\caption{Thí nghiệm 2 \& 3 -- Kết quả tinh chỉnh K-NN ($k=1..31$, có Train Acc) và Decision Tree trên GroupVal (F5)}
 \label{tab:exp23}
 \footnotesize
 \resizebox{\textwidth}{!}{%
@@ -259,18 +260,22 @@ Tuân thủ nghiêm ngặt kỷ luật không xem tập Test khi chọn tham s�
 \toprule
 \textbf{Thuật toán} & \textbf{Cấu hình tiêu biểu} & \textbf{Train Acc} & \textbf{GroupVal Acc} & \textbf{GroupVal Macro-F1} & \textbf{GroupVal Pred (s)} \\
 \midrule
-K-NN & k=1, uniform, euclidean & -- & 89,81\% & 86,81\% & 1,04 \\
-K-NN & k=3, distance, euclidean & -- & 90,66\% & 87,55\% & 1,05 \\
-K-NN & k=3, distance, manhattan & -- & 90,69\% & 87,67\% & 10,06 \\
-K-NN & k=3, distance, cosine & -- & 90,42\% & 87,08\% & 2,89 \\
-K-NN & k=5, uniform, euclidean & -- & 91,32\% & 88,02\% & 1,00 \\
-K-NN & k=7, distance, euclidean & -- & 91,81\% & 88,54\% & 0,97 \\
-K-NN & k=7, distance, manhattan & -- & 91,87\% & 88,75\% & 10,05 \\
-K-NN & k=7, distance, cosine & -- & 91,46\% & 87,83\% & 2,94 \\
-K-NN & k=11, uniform, euclidean & -- & 92,09\% & 88,70\% & 1,10 \\
-K-NN & k=11, distance, euclidean (Tối ưu GroupVal) & -- & 92,24\% & 88,94\% & 1,08 \\
-K-NN & k=11, distance, manhattan & -- & 92,19\% & 88,92\% & 10,19 \\
-K-NN & k=11, distance, cosine & -- & 91,95\% & 88,23\% & 3,04 \\
+K-NN & k=1, uniform, euclidean & 100,00\% & 89,81\% & 86,81\% & 1,03 \\
+K-NN & k=3, distance, euclidean & 100,00\% & 90,66\% & 87,55\% & 1,03 \\
+K-NN & k=3, distance, manhattan & 100,00\% & 90,69\% & 87,67\% & 10,05 \\
+K-NN & k=5, uniform, euclidean & 99,38\% & 91,32\% & 88,02\% & 1,03 \\
+K-NN & k=7, distance, euclidean & 100,00\% & 91,81\% & 88,54\% & 1,03 \\
+K-NN & k=7, distance, manhattan & 100,00\% & 91,87\% & 88,75\% & 10,05 \\
+K-NN & k=11, uniform, euclidean & 99,12\% & 92,09\% & 88,70\% & 1,03 \\
+K-NN & k=11, distance, euclidean & 100,00\% & 92,24\% & 88,94\% & 1,03 \\
+K-NN & k=11, distance, manhattan & 100,00\% & 92,19\% & 88,92\% & 10,05 \\
+K-NN & k=15, distance, euclidean & 100,00\% & 92,34\% & 89,09\% & 1,03 \\
+K-NN & k=15, distance, manhattan & 100,00\% & 92,37\% & 88,96\% & 10,05 \\
+K-NN & k=21, uniform, euclidean & 98,68\% & 92,38\% & 88,72\% & 1,03 \\
+K-NN & k=21, distance, euclidean (Tối ưu GroupVal) & 100,00\% & 92,49\% & 88,87\% & 1,03 \\
+K-NN & k=21, distance, manhattan & 100,00\% & 92,38\% & 88,83\% & 10,05 \\
+K-NN & k=31, distance, euclidean & 100,00\% & 92,16\% & 88,30\% & 1,03 \\
+K-NN & k=31, distance, manhattan & 100,00\% & 92,42\% & 88,68\% & 10,05 \\
 \midrule
 Decision Tree & gini, max\_depth=5 & 29,14\% & 29,99\% & 13,20\% & 0,00 \\
 Decision Tree & gini, max\_depth=10 & 61,73\% & 57,96\% & 40,28\% & 0,00 \\
@@ -291,16 +296,16 @@ Decision Tree & entropy, max\_depth=None & 100,00\% & 69,80\% & 62,02\% & 0,00 \
 \centering
 \includegraphics[width=0.49\textwidth]{figures/fig5_knn_hyperparams.png}\hfill
 \includegraphics[width=0.49\textwidth]{figures/fig6_dt_hyperparams.png}
-\caption{Đường cong tinh chỉnh siêu tham số đánh giá trên GroupVal tách theo track: (trái) K-NN 30 cấu hình; (phải) Decision Tree 12 cấu hình.}
+\caption{Đường cong tinh chỉnh siêu tham số trên GroupVal và 5-Fold GroupKFold CV: (trái) K-NN $k=1..31$ kèm vùng $\pm$ 1 SD 5-fold; (phải) Decision Tree 12 cấu hình.}
 \label{fig:hp_tuning}
 \end{figure*}
 
-\subsection{Thí nghiệm 4: Phân tích số chiều PCA xác định (Full SVD) trên GroupVal}
-Sử dụng PCA(n\_components=512, svd\_solver=full) cho kết quả hoàn toàn tất định (d=128 khớp chính xác 64,74\% phương sai với cấu hình F5 độc lập). Bảng~\ref{tab:exp4} và Hình~\ref{fig:pca} (đầu dò K-NN k=11 Cosine trên GroupVal) cho thấy tại d=128, mô hình giữ lại 64,74\% phương sai và đạt 91,95\% GroupVal Accuracy (gần tương đương mức nguyên bản 1.860 chiều ở 91,96\%) trong khi thời gian suy luận giảm từ 6,27s xuống 3,03s. Mức d=256 đạt GroupVal cao nhất ở đầu dò Cosine (92,42\%, 78,70\% phương sai), còn d=128 cân bằng tốt giữa chi phí lưu trữ vector (gấp 14,5 lần nhỏ hơn 1.860 chiều) và độ chính xác.
+\subsection{Thí nghiệm 4: Phân tích số chiều PCA (Full SVD) trên GroupVal}
+Sử dụng PCA(n\_components=512, svd\_solver=full) cho kết quả tất định: tại $d=128$, không gian F5 giữ lại 64,74\% phương sai và đạt 91,93\% GroupVal Accuracy (gần tương đương không gian gốc 1.860 chiều ở 92,30\%) trong khi thời gian suy luận giảm từ 6,14s xuống 3,06s (Bảng~\ref{tab:exp4}, Hình~\ref{fig:pca}). Mức $d=256$ đạt đỉnh đầu dò Cosine (92,29\%, 78,70\% phương sai) nhưng gấp đôi kích thước bộ nhớ vector so với $d=128$.
 
 \begin{table}[!t]
 \centering
-\caption{Thí nghiệm 4 -- Quét chiều PCA trên GroupVal (K-NN k=11, Cosine)}
+\caption{Thí nghiệm 4 -- Quét chiều PCA trên GroupVal (K-NN $k=21$, Cosine)}
 \label{tab:exp4}
 \footnotesize
 \setlength{\tabcolsep}{4pt}
@@ -309,12 +314,12 @@ Sử dụng PCA(n\_components=512, svd\_solver=full) cho kết quả hoàn toàn
 \toprule
 \textbf{Số chiều d} & \textbf{Phương sai} & \textbf{GroupVal Acc} & \textbf{GV Macro-F1} & \textbf{Pred (s)} \\
 \midrule
-32 & 45,87\% & 86,01\% & 80,22\% & 3,23 \\
-64 & 54,28\% & 90,03\% & 85,86\% & 3,08 \\
-128 & 64,74\% & 91,95\% & 88,23\% & 3,03 \\
-256 & 78,70\% & 92,42\% & 89,11\% & 3,22 \\
-512 & 95,34\% & 91,95\% & 88,78\% & 3,61 \\
-1860 (Gốc F4) & 100,00\% & 91,96\% & 89,01\% & 6,27 \\
+32 & 45,87\% & 86,49\% & 80,51\% & 3,55 \\
+64 & 54,28\% & 90,45\% & 86,07\% & 2,91 \\
+128 & 64,74\% & 91,93\% & 87,91\% & 3,06 \\
+256 & 78,70\% & 92,29\% & 88,69\% & 3,13 \\
+512 & 95,34\% & 92,32\% & 88,80\% & 3,69 \\
+1860 (Gốc F4) & 100,00\% & 92,30\% & 88,89\% & 6,14 \\
 \bottomrule
 \end{tabular}%
 }
@@ -327,19 +332,17 @@ Sử dụng PCA(n\_components=512, svd\_solver=full) cho kết quả hoàn toàn
 \label{fig:pca}
 \end{figure}
 
-\subsection{Thí nghiệm 5: Đánh giá trên tập Test khóa, kiểm định 95\% CI và Demo}
-Bảng~\ref{tab:exp5} và Hình~\ref{fig:comp} trình bày kết quả đánh giá cuối cùng một lần trên 12.630 ảnh Test độc lập kèm khoảng tin cậy Bootstrap 95\% (1.000 lần lấy mẫu lại) cho toàn bộ 11 cấu hình tách biệt hoàn toàn:
+\subsection{Thí nghiệm 5: Đánh giá Test, tinh chỉnh MLP/RF, Full-Train Refit và McNemar Holm--Bonferroni}
+Bảng~\ref{tab:exp5} và Hình~\ref{fig:comp} báo cáo đầy đủ cả các mô hình huấn luyện trên 80\% dữ liệu lẫn 5 mô hình Full-Train Refit (huấn luyện lại bằng toàn bộ 39.209 ảnh của 1.307 track sau khi chốt tham số) trên 12.630 ảnh Test kèm Bootstrap 95\% CI:
 \begin{enumerate}
-  \item Trong các thuật toán bắt buộc của học phần trên F5, K-NN tối ưu (k=11, distance, Euclidean) đạt 89,79\% ($\pm$ 0,53\%) Test Accuracy và 86,50\% ($\pm$ 0,85\%) Macro-F1, cao hơn Gaussian Naive Bayes (88,20\%, Macro-F1 85,57\%, kiểm định McNemar $\chi^2 = 32,14$, p = $1{,}43\times 10^{-8}$) và Decision Tree (69,07\%, Macro-F1 59,45\%). Đổi lại, GNB suy luận nhanh gần 5 lần so với K-NN Euclidean (0,35s so với 1,72s) và không cần lưu trữ ma trận 31.349 vector mẫu.
-  \item Trên không gian HOG thuần nén PCA (K-NN F3-PCA, k=11 Euclidean), mô hình đạt 90,45\% Test Accuracy và 87,48\% Macro-F1, cao hơn có ý nghĩa thống kê so với K-NN F5 (89,79\%, McNemar p = 0,0004). Việc loại bỏ PCA ở K-NN F4 (1.860 chiều) chỉ đạt 89,81\% tương đương thống kê với K-NN F5 trong khi thời gian dự đoán chậm hơn 10 lần (18,06s so với 1,72s).
-  \item Chênh lệch tốc độ giữa K-NN Euclidean (1,72s) và K-NN Manhattan đối chứng (89,95\%, dự đoán 12,01s) bắt nguồn từ cơ chế cài đặt của scikit-learn tối ưu khoảng cách $L_2$ qua phép nhân ma trận BLAS $\|a-b\|_2^2 = \|a\|_2^2 + \|b\|_2^2 - 2a^Tb$, không phải do độ phức tạp tiệm cận thuật toán khác nhau.
-  \item Ở phần mở rộng, Random Forest (200 cây) đạt 87,73\% Test Accuracy (Macro-F1 81,79\%), còn mạng MLP đạt hiệu năng cao nhất 92,77\% ($\pm$ 0,46\%) và Macro-F1 89,96\% ($\pm$ 0,75\%) chỉ với 0,02 giây suy luận (McNemar p = $5{,}02\times 10^{-32}$ khi đối chiếu với K-NN F5).
-  \item Đối chiếu với mốc tham chiếu trong tài liệu gốc IJCNN 2011 của Stallkamp et al.~\cite{stallkamp2012man}: con người đạt 98,84\%, hệ thống CNN đa tỷ lệ và Committee CNN đạt 98,31\%--99,46\%, còn các hệ thống tuyến tính LDA kết hợp HOG đơn lẻ chuẩn cuộc thi đạt 93,18\%--95,68\% với 1.568--2.916 chiều đặc trưng. Như vậy, kết quả 92,77\% của mạng MLP hai lớp ẩn trên chỉ 128 chiều nén PCA đã tiệm cận mức HOG-LDA gốc với dung lượng vector gọn hơn hơn 12 lần.
+  \item Trong các mô hình cốt lõi của học phần, K-NN F3-PCA ($k=21$, Manhattan) đạt 90,59\% (80\%-Train) và tăng lên 91,00\% ($\pm$ 0,48\%, Macro-F1 88,49\%) khi tái huấn luyện Full-Train nhờ tận dụng thêm 262 track nhãn thực tế. Mức này vượt có ý nghĩa thống kê so với K-NN F5 80\%-Train (89,88\%, McNemar thô $p = 0,0005$, hiệu chỉnh Holm--Bonferroni $p_{\text{Holm}} = 0,0036$), khẳng định sự nhất quán giữa kết luận loại bỏ màu trên K-NN và mô hình được triển khai.
+  \item Với Random Forest (F5), chuyển class\_weight từ None sang balanced\_subsample cải thiện Macro-F1 từ 81,79\% lên 82,55\% (Test Accuracy gần tương đương: 87,73\% so với 87,58\%). Với MLP, khảo sát GroupVal trên hai kiến trúc (128,) (94,31\% trên F3-PCA) và (256, 128) (94,64\% trên F3-PCA, 94,73\% trên F5) với max\_iter $\in \{30, 50\}$ ghi nhận mạng hai tầng ẩn hội tụ sớm tại epoch 29 dưới ngưỡng tol $= 10^{-4}$ (Hình~\ref{fig:ablation_loss}b), khẳng định ngưỡng max\_iter=30 đã đủ hội tụ. Sau khi tái huấn luyện Full-Train, MLP F3-PCA Full Train đạt 93,39\% ($\pm$ 0,44\%, Macro-F1 91,01\%, suy luận 0,02s, McNemar $p_{\text{raw}} = 0,0127$, $p_{\text{Holm}} = 0,0634$ so với bản 80\%-Train).
+  \item Đối chiếu chuẩn bài toán GTSRB trong Stallkamp et al.~\cite{stallkamp2012man}: độ chính xác trung bình của con người là 98,84\%, Committee CNN đạt 99,46\%, còn các hệ thống tuyến tính LDA trên đặc trưng HOG nguyên bản cuộc thi đạt 93,18\% (LDA trên HOG 1) đến 95,68\% (LDA trên HOG 2, 1.568--2.916 chiều). Với 93,39\% trên chỉ 128 chiều PCA nén từ HOG, mô hình MLP đã vượt mức LDA (HOG 1) và tiệm cận mức LDA (HOG 2) với kích thước vector gọn hơn trên 12 lần.
 \end{enumerate}
 
 \begin{table*}[!t]
 \centering
-\caption{Thí nghiệm 5 -- Kết quả trên tập Test khóa (12.630 ảnh) kèm khoảng tin cậy Bootstrap 95\% (n=1.000)}
+\caption{Thí nghiệm 5 -- Kết quả trên Test (12.630 ảnh, Bootstrap 95\% CI): 80\%-Train Split và Full-Train Refit (39.209 ảnh)}
 \label{tab:exp5}
 \footnotesize
 \resizebox{\textwidth}{!}{%
@@ -347,17 +350,26 @@ Bảng~\ref{tab:exp5} và Hình~\ref{fig:comp} trình bày kết quả đánh gi
 \toprule
 \textbf{Mô hình / Đặc trưng} & \textbf{GroupVal} & \textbf{Test Acc (95\% CI)} & \textbf{Macro-F1 (95\% CI)} & \textbf{Macro-P} & \textbf{Macro-R} & \textbf{Fit (s)} & \textbf{Pred (s)} \\
 \midrule
-Baseline K-NN (k=5, Raw Gray F1) & 50,84\% & 50,59 $\pm$ 0,87\% & 43,76 $\pm$ 0,98\% & 47,25\% & 42,36\% & 0,07 & 9,75 \\
-Baseline Decision Tree (Raw Gray F1) & 59,08\% & 56,48 $\pm$ 0,84\% & 47,07 $\pm$ 1,04\% & 48,68\% & 46,37\% & 66,58 & 0,02 \\
-Gaussian Naive Bayes (Raw Gray F1) & 14,95\% & 14,18 $\pm$ 0,58\% & 15,23 $\pm$ 0,72\% & 26,32\% & 18,22\% & 0,23 & 2,85 \\
-K-NN F3-PCA (11, euclidean) & 92,79\% & 90,45 $\pm$ 0,49\% & 87,48 $\pm$ 0,80\% & 89,59\% & 86,33\% & 0,01 & 1,66 \\
-K-NN tối ưu F5 (k=11, euclidean) & 92,24\% & 89,79 $\pm$ 0,53\% & 86,50 $\pm$ 0,85\% & 88,37\% & 85,43\% & 0,02 & 1,72 \\
-K-NN F5 (11, manhattan đối chứng) & 92,19\% & 89,95 $\pm$ 0,54\% & 86,97 $\pm$ 0,87\% & 89,44\% & 85,51\% & 0,01 & 12,01 \\
-K-NN F4 không PCA (k=11, euclidean) & 92,58\% & 89,81 $\pm$ 0,53\% & 86,60 $\pm$ 0,77\% & 89,11\% & 85,48\% & 0,09 & 18,06 \\
-Decision Tree F5 (depth=15, entropy) & 70,13\% & 69,07 $\pm$ 0,78\% & 59,45 $\pm$ 1,08\% & 60,63\% & 59,13\% & 51,08 & 0,01 \\
-Gaussian Naive Bayes (F5) & 91,03\% & 88,20 $\pm$ 0,58\% & 85,57 $\pm$ 0,79\% & 89,42\% & 84,53\% & 0,04 & 0,35 \\
-Random Forest (200 trees, F5) & 89,80\% & 87,73 $\pm$ 0,56\% & 81,79 $\pm$ 0,95\% & 90,04\% & 78,72\% & 26,94 & 0,30 \\
-MLP Neural Network (F5) & 94,73\% & 92,77 $\pm$ 0,46\% & 89,96 $\pm$ 0,75\% & 92,08\% & 88,64\% & 17,16 & 0,02 \\
+Baseline K-NN (k=5, Raw Gray F1) & 50,84\% & 50,59 $\pm$ 0,87\% & 43,76 $\pm$ 0,98\% & 47,25\% & 42,36\% & 0,58 & 7,24 \\
+Baseline Decision Tree (Raw Gray F1) & 59,08\% & 56,48 $\pm$ 0,84\% & 47,07 $\pm$ 1,04\% & 48,68\% & 46,37\% & 55,54 & 0,01 \\
+Gaussian Naive Bayes (Raw Gray F1) & 14,95\% & 14,18 $\pm$ 0,58\% & 15,23 $\pm$ 0,72\% & 26,32\% & 18,22\% & 0,25 & 2,66 \\
+K-NN F3-PCA (k=21, manhattan) & 92,90\% & 90,59 $\pm$ 0,49\% & 87,65 $\pm$ 0,78\% & 90,61\% & 85,98\% & 0,01 & 11,83 \\
+K-NN tối ưu F5 (k=21, euclidean) & 92,49\% & 89,88 $\pm$ 0,51\% & 86,29 $\pm$ 0,82\% & 88,59\% & 85,03\% & 0,01 & 1,25 \\
+K-NN F5 (k=21, manhattan đối chứng) & 92,38\% & 90,29 $\pm$ 0,54\% & 87,04 $\pm$ 0,80\% & 90,01\% & 85,37\% & 0,02 & 11,93 \\
+K-NN F4 không PCA (k=21, euclidean) & 92,85\% & 90,04 $\pm$ 0,51\% & 86,77 $\pm$ 0,77\% & 89,76\% & 85,47\% & 0,20 & 12,66 \\
+Decision Tree F5 (depth=15, entropy) & 70,13\% & 69,07 $\pm$ 0,78\% & 59,45 $\pm$ 1,08\% & 60,63\% & 59,13\% & 43,40 & 0,00 \\
+Gaussian Naive Bayes (F3-PCA) & 91,35\% & 88,37 $\pm$ 0,57\% & 85,47 $\pm$ 0,88\% & 88,65\% & 85,20\% & 0,05 & 0,31 \\
+Gaussian Naive Bayes (F5) & 91,03\% & 88,20 $\pm$ 0,58\% & 85,57 $\pm$ 0,79\% & 89,42\% & 84,53\% & 0,05 & 0,31 \\
+Random Forest (200 trees, F5 default) & 89,80\% & 87,73 $\pm$ 0,56\% & 81,79 $\pm$ 0,95\% & 90,04\% & 78,72\% & 22,85 & 0,33 \\
+Random Forest (200 trees, F5 balanced) & 89,94\% & 87,58 $\pm$ 0,58\% & 82,55 $\pm$ 0,93\% & 91,15\% & 79,15\% & 26,05 & 0,34 \\
+MLP Neural Network (F3-PCA, iter=30) & 94,64\% & 92,96 $\pm$ 0,44\% & 90,09 $\pm$ 0,73\% & 92,27\% & 89,09\% & 14,55 & 0,03 \\
+MLP Neural Network (F5, iter=30) & 94,73\% & 92,77 $\pm$ 0,46\% & 89,96 $\pm$ 0,75\% & 92,08\% & 88,64\% & 14,99 & 0,02 \\
+\midrule
+K-NN F3-PCA Full Train (k=21) & Full Train (1.307 trk) & 91,00 $\pm$ 0,48\% & 88,49 $\pm$ 0,76\% & 91,15\% & 87,18\% & 0,02 & 14,78 \\
+K-NN F5 Full Train (k=21) & Full Train (1.307 trk) & 90,58 $\pm$ 0,51\% & 87,80 $\pm$ 0,78\% & 89,83\% & 86,85\% & 0,01 & 1,54 \\
+MLP F3-PCA Full Train & Full Train (1.307 trk) & 93,39 $\pm$ 0,44\% & 91,01 $\pm$ 0,74\% & 92,37\% & 90,19\% & 17,64 & 0,02 \\
+MLP F5 Full Train & Full Train (1.307 trk) & 93,38 $\pm$ 0,44\% & 90,89 $\pm$ 0,67\% & 92,15\% & 90,05\% & 17,98 & 0,02 \\
+DT F5 Full Train (depth=15) & Full Train (1.307 trk) & 69,53 $\pm$ 0,74\% & 61,47 $\pm$ 1,03\% & 63,00\% & 61,00\% & 56,63 & 0,00 \\
 \bottomrule
 \end{tabular}%
 }
@@ -366,11 +378,18 @@ MLP Neural Network (F5) & 94,73\% & 92,77 $\pm$ 0,46\% & 89,96 $\pm$ 0,75\% & 92
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.66\textwidth]{figures/fig8_model_comparison.png}
-\caption{Đối sánh hiệu năng Test Accuracy và Macro-F1 kèm thanh sai số Bootstrap 95\% CI giữa 11 mô hình thực nghiệm.}
+\caption{Đối sánh hiệu năng Test Accuracy và Macro-F1 kèm thanh sai số Bootstrap 95\% CI giữa các cấu hình 80\%-Train và Full-Train Refit.}
 \label{fig:comp}
 \end{figure*}
 
-Hình~\ref{fig:cm} hiển thị ma trận nhầm lẫn chuẩn hóa $43\times 43$ của K-NN F5 (điểm số đỏ biểu diễn số lượng ảnh nhầm tại các ô ngoài đường chéo $\ge 5\%$). Kiểm thử trực tiếp trên ứng dụng Web Demo (Hình~\ref{fig:demo_design}) với toàn bộ 8 ảnh mẫu thuộc sample\_images/ ghi nhận: MLP dự đoán chính xác 8/8 lớp với độ tin cậy 99,39\%--100,00\% (~0,2--0,6 ms/ảnh); K-NN đạt 7/8 lớp (~4--22 ms/ảnh, riêng mẫu khó test\_class\_18.png K-NN ra Lớp 26 ở mức 45,99\% dưới ngưỡng từ chối $\tau=0{,}70$ và được MLP lẫn Decision Tree đồng thuận sửa đúng thành Lớp 18); Decision Tree đạt 7/8 lớp (~0,2--3 ms/ảnh).
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.78\textwidth]{figures/fig13_ablation_loss.png}
+\caption{Phép thử phản chứng: (a) Ảnh hưởng trọng số màu $\alpha \in [0; 1]$ lên K-NN trên 1.860 chiều gốc và 128 chiều PCA; (b) Đường cong hội tụ Training Loss qua 29 epoch của MLP F3-PCA và MLP F5.}
+\label{fig:ablation_loss}
+\end{figure*}
+
+Hình~\ref{fig:cm} hiển thị ma trận nhầm lẫn chuẩn hóa $43\times 43$ của K-NN F5. Kiểm thử bộ 5 mô hình Full-Train lưu trong gtsrb\_pipeline.joblib trên 8 ảnh mẫu GTSRB chuẩn trong sample\_images/ ghi nhận độ chính xác lần lượt đạt 8/8 (K-NN F3-PCA, MLP F3-PCA, MLP F5, DT F5) và 7/8 (K-NN F5, nhầm mẫu khó test\_class\_18.png). Khi thử nghiệm thêm 2 ảnh ngoại cảnh chưa cắt sát (external\_scene\_*.png, bật auto\_trim=True), hai mô hình có màu F5 nhận dạng đúng biển 50 km/h nhưng các mô hình đều nhạy với viền hậu cảnh vượt quá 10\%, cho thấy giới hạn khi thiếu bộ dò ROI tự động.
 
 \begin{figure*}[!t]
 \centering
@@ -380,17 +399,13 @@ Hình~\ref{fig:cm} hiển thị ma trận nhầm lẫn chuẩn hóa $43\times 43
 \end{figure*}
 
 % ==================== SECTION V ====================
-\section{THẢO LUẬN VÀ SO SÁNH}
+\section{THẢO LUẬN, PHÂN TÍCH LỖI ĐA BIẾN VÀ HẠN CHẾ}
 
-\subsection{Lý giải hành vi thuật toán và hạn chế RF/PCA}
-\begin{enumerate}
-  \item Độ lợi từ bất biến cục bộ HOG: Vector pixel thô đo trực tiếp độ chênh sáng từng điểm ảnh cố định nên rất nhạy với lệch tâm. HOG tổng hợp gradient theo ô $4\times 4$ và chuẩn hóa khối L2-Hys nên ổn định trước dịch chuyển nhỏ và bóng râm cục bộ, giải thích bước tăng +39,27 điểm \% giữa F1 và F3.
-  \item Tương tác giữa PCA và các thuật toán: Decision Tree sử dụng lát cắt trực giao theo từng trục tọa độ nên sau phép quay tuyến tính PCA, các ranh giới lớp bị kéo chéo khiến cây đơn lẻ khó xấp xỉ hiệu quả (69,07\%). Với Gaussian Naive Bayes, phép chiếu PCA thực hiện khử tương quan tuyến tính bậc hai thông qua chéo hóa ma trận hiệp phương sai mẫu toàn cục $\Sigma_{\text{global}}$ trên tập huấn luyện, giúp mô hình tiến gần hơn tới giả định các thành phần trực giao dù chưa đảm bảo độc lập có điều kiện hoàn toàn trong từng lớp ($\Sigma_c$ vẫn có thể còn hiệp phương sai chéo). Do mỗi lớp biển báo còn chứa các cụm ánh sáng đa đỉnh (multimodal), bộ phân loại dựa trên khoảng cách K-NN (89,79\%) và mạng phi tuyến MLP (92,77\%) linh hoạt hơn GNB (88,20\%).
-  \item Độ lệch Accuracy--Macro Recall ở Random Forest: Bảng~\ref{tab:exp5} ghi nhận Random Forest đạt Test Accuracy 87,73\% nhưng Macro-Recall chỉ đạt 78,72\% (chênh lệch gần 9 điểm \%). Nguyên nhân là cấu hình mặc định class\_weight=None ưu tiên giảm lỗi tạp chất Gini trên các lớp có hàng nghìn mẫu (Lớp 1, 2, 12, 13, 38) và bỏ sót các lớp thiểu số chỉ có 60--150 mẫu kiểm thử.
-\end{enumerate}
+\subsection{Lý giải hành vi thuật toán và tương tác PCA}
+Trên pixel thô (F0--F2), khoảng cách Euclidean cộng dồn nhiễu dịch chuyển điểm ảnh khiến K-NN chỉ đạt 50,59\% (F1), trong khi Decision Tree chọn được vài pixel tâm có độ lợi thông tin cao nên thắng nhẹ ở 56,48\%. Khi chuyển sang HOG (F3\_noCLAHE/F3), biểu đồ gradient cục bộ giúp K-NN nhảy vọt lên 89,86\%, trong khi lát cắt trực giao của DT không tận dụng hiệu quả các tổ hợp gradient tương quan nên chững lại (69,07\% sau xoay PCA). Với Gaussian Naive Bayes, phép chiếu PCA trực giao hóa ma trận hiệp phương sai mẫu toàn cục $\Sigma_{\text{global}}$ giúp mô hình giảm vi phạm giả định độc lập tuyến tính (nhảy từ 14,18\% lên 88,20\% và 88,37\% trên F3-PCA), dù vẫn thua K-NN và MLP do phân phối mỗi lớp trong thực tế mang tính đa đỉnh theo điều kiện ánh sáng.
 
-\subsection{Kiểm chứng lỗi định lượng theo kích thước, độ sáng và Coverage--Accuracy}
-Trên tập Test của K-NN (F5), ba lớp đạt F1 cao nhất là Lớp 32 (Hết mọi lệnh cấm, F1 = 100,0\%), Lớp 13 (Nhường đường, 99,9\%) và Lớp 38 (Đi bên phải chướng ngại vật, 99,9\%); ba lớp khó nhất là Lớp 30 (Cảnh báo băng tuyết, F1 = 31,3\%), Lớp 28 (Trẻ em qua đường, 60,8\%) và Lớp 23 (Đường trơn trượt, 66,0\%). Bảng~\ref{tab:errors} thống kê Top 10 cặp nhầm lẫn hai chiều phổ biến nhất (trong đó cặp 120 km/h $\leftrightarrow$ 100 km/h chiếm 95 ảnh gồm 53 chiều 120 $\rightarrow$ 100 và 42 chiều 100 $\rightarrow$ 120). Hình~\ref{fig:err_gallery} minh họa 8 mẫu lỗi trực quan điển hình (00196.ppm (28$\times$27 px: [8] $\rightarrow$ [7]); 00076.ppm (45$\times$51 px: [1] $\rightarrow$ [5]); 00087.ppm (36$\times$41 px: [7] $\rightarrow$ [8]); 00266.ppm (28$\times$28 px: [5] $\rightarrow$ [2]); 00760.ppm (47$\times$48 px: [3] $\rightarrow$ [5]); 00198.ppm (44$\times$40 px: [18] $\rightarrow$ [25]); 00012.ppm (79$\times$73 px: [23] $\rightarrow$ [31]); 00213.ppm (51$\times$49 px: [5] $\rightarrow$ [1])).
+\subsection{Phân tích lỗi định lượng: Wilson 95\% CI, Hồi quy Logistic, Ngưỡng \texorpdfstring{$\tau$}{tau} và Kiểm chứng Cắt lề 10\%}
+Trên K-NN F5, ba lớp có Macro-F1 cao nhất gồm Lớp 13 (Nhường đường, 99,9\%), Lớp 38 (Đi bên phải chướng ngại vật, 99,9\%) và Lớp 33 (Hướng đi phải theo: rẽ phải, 99,8\%); ba lớp khó nhất là Lớp 30 (Cảnh báo băng tuyết, 24,8\%), Lớp 23 (Đường trơn trượt, 62,9\%) và Lớp 28 (Trẻ em qua đường, 65,6\%). Bảng~\ref{tab:errors} thống kê Top 10 cặp nhầm lẫn hai chiều (nổi bật là cặp 120 $\leftrightarrow$ 100 km/h) và Hình~\ref{fig:err_gallery} minh họa 8 ca lỗi điển hình (00196.ppm (28$\times$27 px: [8] $\rightarrow$ [7]); 00576.ppm (37$\times$36 px: [3] $\rightarrow$ [5]); 00198.ppm (44$\times$40 px: [18] $\rightarrow$ [25]); 00375.ppm (32$\times$33 px: [1] $\rightarrow$ [5]); 00076.ppm (45$\times$51 px: [1] $\rightarrow$ [2]); 00083.ppm (35$\times$35 px: [7] $\rightarrow$ [8]); 00266.ppm (28$\times$28 px: [5] $\rightarrow$ [2]); 00012.ppm (79$\times$73 px: [23] $\rightarrow$ [31])).
 
 \begin{table*}[!t]
 \centering
@@ -402,16 +417,16 @@ Trên tập Test của K-NN (F5), ba lớp đạt F1 cao nhất là Lớp 32 (H�
 \toprule
 \textbf{\#} & \textbf{Cặp lớp (A $\leftrightarrow$ B)} & \textbf{A$\rightarrow$B} & \textbf{B$\rightarrow$A} & \textbf{Tổng} \\
 \midrule
-1 & [8] 120 km/h $\leftrightarrow$ [7] 100 km/h & 53 & 42 & 95 \\
-2 & [1] 30 km/h $\leftrightarrow$ [5] 80 km/h & 47 & 33 & 80 \\
-3 & [5] 80 km/h $\leftrightarrow$ [2] 50 km/h & 40 & 22 & 62 \\
-4 & [26] Đèn tín hiệu $\leftrightarrow$ [18] Nguy hiểm khác & 26 & 23 & 49 \\
-5 & [1] 30 km/h $\leftrightarrow$ [2] 50 km/h & 32 & 11 & 43 \\
-6 & [3] 60 km/h $\leftrightarrow$ [5] 80 km/h & 40 & 3 & 43 \\
-7 & [18] Nguy hiểm khác $\leftrightarrow$ [25] Công trường & 39 & 3 & 42 \\
-8 & [23] Đường trơn $\leftrightarrow$ [31] Động vật & 35 & 4 & 39 \\
-9 & [30] Băng tuyết $\leftrightarrow$ [23] Đường trơn & 28 & 8 & 36 \\
-10 & [26] Đèn tín hiệu $\leftrightarrow$ [25] Công trường & 25 & 7 & 32 \\
+1 & [8] 120 km/h $\leftrightarrow$ [7] 100 km/h & 57 & 38 & 95 \\
+2 & [1] 30 km/h $\leftrightarrow$ [5] 80 km/h & 44 & 32 & 76 \\
+3 & [5] 80 km/h $\leftrightarrow$ [2] 50 km/h & 38 & 27 & 65 \\
+4 & [18] Nguy hiểm khác $\leftrightarrow$ [25] Công trường & 47 & 3 & 50 \\
+5 & [1] 30 km/h $\leftrightarrow$ [2] 50 km/h & 39 & 11 & 50 \\
+6 & [3] 60 km/h $\leftrightarrow$ [5] 80 km/h & 48 & 2 & 50 \\
+7 & [26] Đèn tín hiệu $\leftrightarrow$ [18] Nguy hiểm khác & 26 & 16 & 42 \\
+8 & [30] Băng tuyết $\leftrightarrow$ [23] Đường trơn & 32 & 8 & 40 \\
+9 & [11] Ưu tiên nút giao $\leftrightarrow$ [30] Băng tuyết & 19 & 18 & 37 \\
+10 & [23] Đường trơn $\leftrightarrow$ [31] Động vật & 34 & 2 & 36 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -419,7 +434,7 @@ Trên tập Test của K-NN (F5), ba lớp đạt F1 cao nhất là Lớp 32 (H�
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.76\textwidth]{figures/fig11_error_diagnostics.png}
-\caption{Kiểm chứng định lượng nguyên nhân lỗi trên toàn bộ 12.630 ảnh Test: (a) Tỷ lệ lỗi theo kích thước ảnh gốc; (b) Tỷ lệ lỗi theo độ sáng trung bình; (c) Đường cong Coverage--Accuracy của K-NN F5 và MLP F5.}
+\caption{Phân tích lỗi kèm thanh 95\% Wilson CI trên 12.630 ảnh Test: (a) Theo kích thước ảnh; (b) Theo độ sáng trung bình; (c) Đường cong Coverage--Accuracy và lựa chọn ngưỡng $\tau$.}
 \label{fig:err_diag}
 \end{figure*}
 
@@ -430,22 +445,30 @@ Trên tập Test của K-NN (F5), ba lớp đạt F1 cao nhất là Lớp 32 (H�
 \label{fig:err_gallery}
 \end{figure*}
 
-Thay vì dừng ở suy đoán trực quan, Hình~\ref{fig:err_diag} kiểm chứng định lượng trên toàn bộ 12.630 ảnh Test:
+Để tránh ngụy biện nhân quả từ thống kê đơn biến, nhóm kiểm chứng sâu bằng bốn phân tích định lượng (Hình~\ref{fig:err_diag}):
 \begin{enumerate}
-  \item Ảnh hưởng của độ phân giải thấp (Hình~\ref{fig:err_diag}a): Nhóm ảnh có chiều rộng nhỏ hơn 32 px (2.105 ảnh) có tỷ lệ lỗi cao tới 16,58\%, cao gấp hơn 2,2 lần nhóm ảnh 46--64 px (7,36\%) và $>$ 64 px (7,69\%), khẳng định định lượng nguyên nhân suy giảm độ nét HOG ở các chữ số tốc độ kích thước nhỏ.
-  \item Ảnh hưởng hai đầu của điều kiện sáng (Hình~\ref{fig:err_diag}b): Tỷ lệ lỗi tạo hình chữ U rõ rệt giữa vùng ánh sáng tối cực đoan ($<$ 50: 12,90\%, n=3.821) và vùng chói sáng ($>$ 150: 13,31\%, n=1.142) so với vùng ánh sáng tiêu chuẩn 101--150 (7,20\%).
-  \item Hiệu quả ngưỡng từ chối Coverage--Accuracy (Hình~\ref{fig:err_diag}c): Trong bài toán an toàn ADAS (nhằm tránh nhầm 30 km/h lên 50/80 km/h), việc đặt ngưỡng điểm tin cậy $\tau = 0{,}70$ giúp K-NN đạt 97,79\% độ chính xác trên 81,1\% số ảnh (tại $\tau = 0{,}85$ đạt 99,30\% trên 70,3\% ảnh); trong khi MLP tại $\tau = 0{,}95$ duy trì độ phủ 90,3\% với độ chính xác 97,41\%.
+  \item Khoảng tin cậy Wilson 95\% theo kích thước và độ sáng: Nhóm ảnh nhỏ $<$ 32 px ($n=2.105$) có tỷ lệ lỗi 17,20\% [95\% Wilson CI: 15,65--18,87\%], cao gấp đôi nhóm 46--64 px (7,61\% [6,74--8,58\%]). Theo độ sáng, vùng rất tối ($<$ 50: 12,69\% [11,67--13,79\%]) và chói sáng ($>$ 150: 14,10\% [12,20--16,24\%]) cao hơn vùng sáng chuẩn 101--150 (7,06\% [6,18--8,07\%]).
+  \item Phân tầng nhóm biển tốc độ \& Hồi quy Logistic đa biến: Khi phân tầng riêng trên ảnh nhỏ $<$ 32 px, nhóm biển giới hạn tốc độ chịu tỷ lệ lỗi 23,34\% so với 13,46\% ở các biển hình khối còn lại. Hồi quy Logistic đa biến trên toàn bộ 12.630 ảnh Test (kiểm soát đồng thời kích thước $\log_2(\text{width})$, độ lệch sáng $|B-120|$ và biến chỉ thị biển tốc độ) ghi nhận: tăng 1 độ lệch chuẩn $\log_2(\text{width})$ làm giảm odds sai số với OR = 0,79 ($p = 1{,}63\times 10^{-12}$); biển tốc độ làm tăng odds sai số OR = 1,20 ($p = 0,0036$), còn lệch sáng cho OR = 1,38 ($p = 1{,}16\times 10^{-25}$). Điều này xác nhận cả độ phân giải nhỏ lẫn đặc thù giống nhau giữa các chữ số tốc độ là hai yếu tố tác động độc lập có ý nghĩa thống kê.
+  \item Ngưỡng an toàn ADAS ($\tau = 0{,}70$) chọn trên GroupVal \& giảm lỗi nguy hiểm: Tại $\tau=0{,}70$ (được chốt trên GroupVal với độ chính xác 99,21\% ở độ phủ 79,2\%), K-NN trên Test đạt 98,76\% độ chính xác tại độ phủ 76,5\%, giảm số ca lỗi nguy hiểm đọc nhầm biển 30 km/h lên tốc độ cao ($\ge 50$ km/h) từ 101 ca ($\tau=0$) xuống còn 3 ca (tổng số ca tăng tốc độ sai giảm từ 273 xuống 13, và xuống 0 ca nhầm $30\rightarrow 50+$ tại $\tau=0{,}85$). Với MLP tại $\tau=0{,}95$, độ phủ đạt 90,3\% ở độ chính xác 97,41\%, kéo lỗi tăng tốc độ sai từ 130 xuống 55 ca (giảm ca nhầm $30\rightarrow 50+$ từ 47 xuống còn 14 ca).
+  \item Kiểm chứng thực nghiệm crop\_center\_margin(0,10) trên toàn bộ 12.630 ảnh Test: Khi không dùng hộp ROI chuẩn của dataset và chỉ cắt đều 10\% bốn cạnh (auto\_trim=True), độ chính xác của mô hình tốt nhất MLP F3-PCA Full Train đạt 87,11\% so với 93,39\% khi có hộp ROI chuẩn (MLP F5: 87,47\% so với 93,38\%; K-NN F5: 80,73\% so với 90,58\%). Chênh lệch khoảng 6--10 điểm \% chứng tỏ phép cắt lề 10\% hữu ích khi biển nằm gọn trung tâm ảnh ngoại cảnh nhưng không thể thay thế bộ dò ROI chuyên dụng ngoài thực tế.
 \end{enumerate}
 
-Hệ thống hiện còn bốn hạn chế kỹ thuật: (i) phụ thuộc tọa độ ROI cắt sẵn ở tập dữ liệu chuẩn; (ii) lưới HOG/Màu cố định $4\times 4$ nhạy với góc xoay nghiêng lớn; (iii) K-NN phải lưu toàn bộ 31.349 vector huấn luyện; và (iv) tỷ lệ phát hiện lớp thiểu số ở Random Forest bị giảm khi không cân bằng trọng số lớp.
-
 % ==================== SECTION VI ====================
-\onecolumn\twocolumn
 \section{TỔNG KẾT VÀ HƯỚNG PHÁT TRIỂN}
-Nghiên cứu đã xây dựng quy trình nhận dạng biển báo giao thông GTSRB 43 lớp không rò rỉ dữ liệu theo track thông qua StratifiedGroupKFold(5) và chỉ mở khóa đánh giá tập Test một lần ở bước so sánh cuối kèm Bootstrap 95\% CI và kiểm định McNemar. Kết quả thực nghiệm chứng minh đặc trưng hình dạng HOG + CLAHE giữ vai trò quyết định nâng K-NN từ 50,59\% lên 90,45\% (F3-PCA) và 89,79\% (F5), Gaussian Naive Bayes đạt 88,20\% nhanh gấp 5 lần, còn mạng MLP đạt 92,77\% (Macro-F1 89,96\%) trên chỉ 128 chiều PCA. Bốn hướng phát triển tiếp theo gồm: (1) tích hợp bộ phát hiện khung ROI tự động trước phân loại; (2) áp dụng biểu quyết liên khung hình theo chuỗi thời gian (track-level temporal smoothing); (3) thử nghiệm trọng số lớp cân bằng cho Random Forest; và (4) kết hợp kiến trúc mạng nơ-ron tích chập gọn nhẹ để thu hẹp khoảng cách với ngưỡng nhận dạng của con người (98,84\%).
+Nghiên cứu đã xây dựng quy trình nhận dạng biển báo GTSRB 43 lớp chặt chẽ: kiểm soát rò rỉ track qua StratifiedGroupKFold(5) (tách Fold 0 lẫn kiểm định chéo 5-fold CV), chốt toàn bộ siêu tham số trên GroupVal trước khi tái huấn luyện Full-Train (39.209 ảnh) cho hệ thống Web Flask. Kết quả thực nghiệm hiệu chỉnh Holm--Bonferroni chứng minh đặc trưng HOG + CLAHE quyết định hiệu năng K-NN (F3-PCA Full Train đạt 91,00\%, vượt F5), đồng thời bác bỏ giả thuyết màu sắc hỗ trợ các mô hình PCA khi cả K-NN, DT lẫn GNB đều giảm sau khi ghép màu vào vector PCA 128 chiều. Mô hình mở rộng MLP F3-PCA Full Train đạt đỉnh 93,39\% ($\pm$ 0,44\%, Macro-F1 91,01\%). Bốn hướng phát triển kế tiếp là: (1) tích hợp bộ phát hiện ROI tự động thay cho cắt lề cố định 10\%; (2) tổng hợp dự đoán theo chuỗi khung hình liên tiếp (temporal smoothing); (3) mở rộng sang chuẩn hóa xác suất (Temperature/Platt scaling) cho ngưỡng $\tau$; và (4) thử nghiệm mạng CNN gọn nhẹ để thu hẹp khoảng cách với ngưỡng con người (98,84\%).
+
+% ==================== APPENDIX ====================
+\section*{PHỤ LỤC: PHÂN CÔNG NHIỆM VỤ VÀ MINH BẠCH AI}
+\noindent Phân công thành viên (Nhóm 6 -- Lớp CNTT 18-10):
+\begin{itemize}
+  \item Lê Trọng Chiến (1871020089 -- Trưởng nhóm, 1871020089@dnu.edu.vn): Điều phối nhóm, thiết kế pipeline chống rò rỉ StratifiedGroupKFold, trích xuất HOG/Màu/PCA, tối ưu K-NN, Colab notebook và quản trị GitHub.
+  \item Đặng Việt Anh (1871020683, 1871020683@dnu.edu.vn): EDA 51.839 ảnh, chuẩn hóa tải dữ liệu GTSRB từ ERDA, tiền xử lý (ROI + 32$\times$32 + CLAHE), Baseline F0--F2 và 10 ảnh mẫu kiểm thử.
+  \item Nguyễn Hữu Dũng (1871020172, 1871020172@dnu.edu.vn): Decision Tree, GNB, Random Forest (cân bằng lớp), MLP, Bootstrap 95\% CI, McNemar Holm--Bonferroni, 5-fold GroupKFold CV và bộ tests/test\_project.py.
+  \item Kiều Văn Nam (1871020416, 1871020416@dnu.edu.vn): Giao diện Web Demo Flask (webapp/), phân tích lỗi đa biến (Wilson CI, Logistic Regression, ngưỡng $\tau$), kiểm chứng cắt lề 10\% và hoàn thiện báo cáo IEEE LaTeX.
+\end{itemize}
+\noindent Minh bạch lịch sử Git và sử dụng công cụ AI: Trong lần nộp tích hợp đầu tiên (commit 0224d5d), toàn bộ mã nguồn của 4 thành viên được gộp chung qua tài khoản điều phối của trưởng nhóm (ChieensLee), sau đó các phần sửa notebook, pipeline, bộ test và báo cáo được ghi nhận ở các commit kế tiếp (không tạo commit giả hoặc lùi ngày). Nhóm sử dụng công cụ AI để gợi ý cấu trúc mô-đun Web Flask, khung hàm thống kê và rà soát trình bày LaTeX; toàn bộ thiết kế phản chứng thực nghiệm, số liệu trong metrics\_summary.json, kết quả unittest và nội dung phân tích đều do nhóm tự chạy kiểm chứng trực tiếp (chi tiết tại AI\_USAGE.md).
 
 % ==================== REFERENCES ====================
-\IEEEtriggeratref{6}
 \begin{thebibliography}{16}
 
 \bibitem{stallkamp2011german}

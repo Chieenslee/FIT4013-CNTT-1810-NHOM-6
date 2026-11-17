@@ -4,23 +4,23 @@
 <section class="kpi-strip">
   <div class="kpi-card">
     <div class="kpi-label">Dữ liệu & Phân tách sạch</div>
-    <div class="kpi-val">{{ "{:,}".format(dataset_meta.get('total_images', 51839)).replace(",", ".") }} ảnh / 43 lớp</div>
-    <div class="kpi-sub">1.045 track Train vs 262 track GroupVal (0 trùng)</div>
+    <div class="kpi-val">{{ "{:,}".format(kpis.total_images).replace(",", ".") }} ảnh / 43 lớp</div>
+    <div class="kpi-sub">{{ "{:,}".format(kpis.train_tracks_count).replace(",", ".") }} track Train vs {{ kpis.val_tracks_count }} track GroupVal (0 trùng)</div>
   </div>
   <div class="kpi-card">
-    <div class="kpi-label">K-NN tối ưu (k=11, F5 PCA-128)</div>
-    <div class="kpi-val">89,79% ± 0,53%</div>
-    <div class="kpi-sub">Test Accuracy (Macro-F1: 86,50% · F3-PCA: 90,45%)</div>
+    <div class="kpi-label">K-NN F3-PCA tối ưu (k={{ kpis.knn_f3p_k }}, Full Train)</div>
+    <div class="kpi-val">{{ ("%.2f"|format(kpis.knn_f3p_full_acc)).replace(".", ",") }}% ± {{ ("%.2f"|format(kpis.knn_f3p_full_ci)).replace(".", ",") }}%</div>
+    <div class="kpi-sub">Test Accuracy (Macro-F1: {{ ("%.2f"|format(kpis.knn_f3p_full_f1)).replace(".", ",") }}% · 80%-Train: {{ ("%.2f"|format(kpis.knn_f3p_80_acc)).replace(".", ",") }}%)</div>
   </div>
   <div class="kpi-card">
-    <div class="kpi-label">MLP Neural Network (F5 Mở rộng)</div>
-    <div class="kpi-val">92,77% ± 0,46%</div>
-    <div class="kpi-sub">Macro-F1: 89,96% · Tốc độ suy luận Test: 0,02s</div>
+    <div class="kpi-label">MLP F3-PCA (Full Train {{ "{:,}".format(kpis.train_full_count).replace(",", ".") }} ảnh)</div>
+    <div class="kpi-val">{{ ("%.2f"|format(kpis.mlp_f3p_full_acc)).replace(".", ",") }}% ± {{ ("%.2f"|format(kpis.mlp_f3p_full_ci)).replace(".", ",") }}%</div>
+    <div class="kpi-sub">Macro-F1: {{ ("%.2f"|format(kpis.mlp_f3p_full_f1)).replace(".", ",") }}% · Suy luận Test: {{ ("%.2f"|format(kpis.mlp_f3p_pred_sec)).replace(".", ",") }}s</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-label">Ngưỡng an toàn ADAS (τ)</div>
     <div class="kpi-val" id="kpi-tau-val">{{ "%.2f"|format(default_tau) }}</div>
-    <div class="kpi-sub">Tại τ=0,70: K-NN đạt 97,79% trên 81,1% mẫu</div>
+    <div class="kpi-sub">Tại τ=0,70: K-NN đạt {{ ("%.2f"|format(kpis.cov70_acc)).replace(".", ",") }}% trên {{ ("%.1f"|format(kpis.cov70_cov)).replace(".", ",") }}% mẫu</div>
   </div>
 </section>
 
@@ -44,11 +44,11 @@
         </div>
 
         <div class="control-group">
-          <label class="field-label">Chọn bộ phân loại chính (tải từ gtsrb_pipeline.joblib)</label>
+          <label class="field-label">Chọn bộ phân loại chính (nạp từ gtsrb_pipeline.joblib)</label>
           <div class="radio-grid">
             {% for spec in model_specs %}
-            <label class="radio-card {% if loop.first %}active{% endif %}">
-              <input type="radio" name="model_choice" value="{{ spec.choice }}" {% if loop.first %}checked{% endif %} />
+            <label class="radio-card {% if spec.choice == default_model %}active{% endif %}">
+              <input type="radio" name="model_choice" value="{{ spec.choice }}" {% if spec.choice == default_model %}checked{% endif %} />
               <span>{{ spec.choice }}</span>
             </label>
             {% endfor %}
@@ -56,8 +56,8 @@
         </div>
 
         <label class="checkbox-row">
-          <input type="checkbox" id="auto-trim" name="auto_trim" />
-          <span>Tự động cắt lề 10% (<code>crop_center_margin</code> – dùng cho ảnh chụp chưa cắt sát biển báo)</span>
+          <input type="checkbox" id="auto-trim" name="auto_trim" {% if initial_result.auto_trim_margin %}checked{% endif %} />
+          <span>Tự động cắt lề 10% (<code>crop_center_margin</code> – dùng cho ảnh chụp ngoại cảnh chưa cắt sát)</span>
         </label>
 
         <div class="control-group">
@@ -74,14 +74,14 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>2. Bộ 8 Ảnh Mẫu Thực Nghiệm (sample_images/)</h2>
+        <h2>2. Bộ 10 Ảnh Mẫu (8 GTSRB + 2 Ngoại cảnh)</h2>
       </div>
       <div class="sample-grid" id="sample-grid">
         {% for item in gallery %}
-        <button type="button" class="sample-tile {% if item.filename == selected_sample %}selected{% endif %}" data-sample="{{ item.filename }}">
+        <button type="button" class="sample-tile {% if item.filename == selected_sample %}selected{% endif %}" data-sample="{{ item.filename }}" data-auto-trim="{{ 'true' if item.auto_trim else 'false' }}">
           <img src="{{ item.thumb_uri }}" alt="{{ item.short_label }}" />
           <span class="sample-name">{{ item.short_label }}</span>
-          <span class="sample-size">{{ item.size_str }} px</span>
+          <span class="sample-size">{{ item.size_str }}{% if item.auto_trim %} · Cắt lề{% endif %}</span>
         </button>
         {% endfor %}
       </div>
@@ -157,7 +157,7 @@
         <div class="stage-box">
           <img id="stage-hog" src="{{ initial_result.stages.hog_uri }}" alt="HOG Gradient" />
           <div class="stage-title">Bước 4: Bản đồ HOG</div>
-          <div class="stage-sub">1.764d + 96d màu → 128d PCA</div>
+          <div class="stage-sub">F3 (1.764d) / F5 (1.860d) → 128d PCA</div>
         </div>
       </div>
     </div>
@@ -190,12 +190,12 @@
         {% endfor %}
       </div>
 
-      <div class="subsection-title">Đối chiếu đồng thuận 3 mô hình đã huấn luyện (Đồng thuận: <span id="agree-ratio">{{ initial_result.agreement_count }}/{{ initial_result.agreement_total }}</span>)</div>
+      <div class="subsection-title">Đối chiếu đồng thuận {{ initial_result.agreement_total }} mô hình Full-Train (Đồng thuận: <span id="agree-ratio">{{ initial_result.agreement_count }}/{{ initial_result.agreement_total }}</span>)</div>
       <div class="table-wrap">
         <table class="data-table">
           <thead>
             <tr>
-              <th>Mô hình (F5 – PCA 128)</th>
+              <th>Mô hình (PCA 128d)</th>
               <th>Dự đoán Top-1</th>
               <th>Nhóm biển báo</th>
               <th class="num">Độ tin cậy</th>
@@ -223,8 +223,8 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>6. Ma Trận Kiểm Thử Nhanh Trên 8 Ảnh Mẫu GTSRB (sample_images/)</h2>
-        <span class="badge-tag muted">MLP 8/8 · K-NN 7/8 · DT 7/8</span>
+        <h2>6. Ma Trận Kiểm Thử Nhanh Trên 10 Ảnh Mẫu (8 GTSRB + 2 Ngoại cảnh)</h2>
+        <span class="badge-tag muted">MLP F3-PCA {{ pass_counts.mlp_f3p }}/{{ pass_counts.total }} · K-NN F3-PCA {{ pass_counts.knn_f3p }}/{{ pass_counts.total }} · K-NN F5 {{ pass_counts.knn }}/{{ pass_counts.total }} · DT {{ pass_counts.dt }}/{{ pass_counts.total }}</span>
       </div>
       <div class="table-wrap">
         <table class="data-table compact">
@@ -232,16 +232,20 @@
             <tr>
               <th>Ảnh mẫu</th>
               <th>Nhãn chuẩn</th>
-              <th>K-NN (F5)</th>
-              <th>Decision Tree (F5)</th>
-              <th>MLP Mở rộng</th>
+              <th>K-NN F3-PCA</th>
+              <th>MLP F3-PCA</th>
+              <th>K-NN F5</th>
+              <th>DT F5</th>
+              <th>MLP F5</th>
             </tr>
           </thead>
           <tbody>
             {% for g in gallery %}
             <tr>
-              <td><code>{{ g.filename }}</code></td>
+              <td><code>{{ g.filename }}</code>{% if g.auto_trim %} <small>(Cắt 10%)</small>{% endif %}</td>
               <td>[{{ g.true_id }}] {{ g.true_name_vi }}</td>
+              <td class="{% if g.knn_f3p.class_id == g.true_id %}cell-ok{% else %}cell-warn{% endif %}">[{{ g.knn_f3p.class_id }}] {{ "%.1f"|format(g.knn_f3p.confidence) }}%</td>
+              <td class="{% if g.mlp_f3p.class_id == g.true_id %}cell-ok{% else %}cell-warn{% endif %}">[{{ g.mlp_f3p.class_id }}] {{ "%.1f"|format(g.mlp_f3p.confidence) }}%</td>
               <td class="{% if g.knn.class_id == g.true_id %}cell-ok{% else %}cell-warn{% endif %}">[{{ g.knn.class_id }}] {{ "%.1f"|format(g.knn.confidence) }}%</td>
               <td class="{% if g.dt.class_id == g.true_id %}cell-ok{% else %}cell-warn{% endif %}">[{{ g.dt.class_id }}] {{ "%.1f"|format(g.dt.confidence) }}%</td>
               <td class="{% if g.mlp.class_id == g.true_id %}cell-ok{% else %}cell-warn{% endif %}">[{{ g.mlp.class_id }}] {{ "%.1f"|format(g.mlp.confidence) }}%</td>

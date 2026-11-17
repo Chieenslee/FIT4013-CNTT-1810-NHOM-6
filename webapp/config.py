@@ -16,37 +16,67 @@ SAMPLE_DIR = os.path.join(PROJECT_ROOT, "sample_images")
 
 DEFAULT_TAU = 0.70
 MAX_UPLOAD_MB = 10
+DEFAULT_MODEL_CHOICE = "K-NN F3-PCA 128 (Tối ưu K-NN)"
 
 MODEL_SPECS = [
     {
+        "choice": "K-NN F3-PCA 128 (Tối ưu K-NN)",
+        "short_label": "K-NN F3-PCA",
+        "bundle_key": "knn_f3p_model",
+        "feature_space": "f3",
+        "metrics_prefix": "K-NN F3_PCA (k=",
+        "full_prefix": "K-NN F3_PCA Full Train",
+        "score_type": "Trọng số nghịch đảo khoảng cách (HOG-CLAHE PCA-128)",
+    },
+    {
+        "choice": "MLP F3-PCA 128 (Tốt nhất toàn cục)",
+        "short_label": "MLP F3-PCA",
+        "bundle_key": "mlp_f3p_model",
+        "feature_space": "f3",
+        "metrics_prefix": "MLP Neural Network (F3_PCA",
+        "full_prefix": "MLP F3_PCA Full Train",
+        "score_type": "Xác suất Softmax đầu ra mạng MLP (HOG-CLAHE PCA-128)",
+    },
+    {
         "choice": "K-NN (F5 - PCA 128)",
+        "short_label": "K-NN F5",
         "bundle_key": "knn_model",
+        "feature_space": "f5",
         "metrics_prefix": "K-NN tối ưu F5",
-        "score_type": "Trọng số nghịch đảo khoảng cách",
+        "full_prefix": "K-NN F5 Full Train",
+        "score_type": "Trọng số nghịch đảo khoảng cách (F5 PCA-128)",
     },
     {
         "choice": "Decision Tree (F5 - PCA 128)",
+        "short_label": "DT F5",
         "bundle_key": "dt_model",
-        "metrics_prefix": "Decision Tree F5",
-        "score_type": "Độ tinh khiết nút lá cây quyết định",
+        "feature_space": "f5",
+        "metrics_prefix": "Decision Tree F5 (",
+        "full_prefix": "Decision Tree F5 Full Train",
+        "score_type": "Độ tinh khiết nút lá cây quyết định (F5 PCA-128)",
     },
     {
         "choice": "MLP Neural Network (Mở rộng)",
+        "short_label": "MLP F5",
         "bundle_key": "mlp_model",
-        "metrics_prefix": "MLP Neural Network",
-        "score_type": "Xác suất Softmax đầu ra mạng MLP",
+        "feature_space": "f5",
+        "metrics_prefix": "MLP Neural Network (F5",
+        "full_prefix": "MLP F5 Full Train",
+        "score_type": "Xác suất Softmax đầu ra mạng MLP (F5 PCA-128)",
     },
 ]
 
 SAMPLE_CATALOG = [
-    {"filename": "test_class_14.png", "true_id": 14, "short_label": "Lớp 14: STOP"},
-    {"filename": "test_class_12.png", "true_id": 12, "short_label": "Lớp 12: Đường ưu tiên"},
-    {"filename": "test_class_13.png", "true_id": 13, "short_label": "Lớp 13: Nhường đường"},
-    {"filename": "test_class_17.png", "true_id": 17, "short_label": "Lớp 17: Cấm ngược chiều"},
-    {"filename": "test_class_40.png", "true_id": 40, "short_label": "Lớp 40: Vòng xuyến"},
-    {"filename": "test_class_02.png", "true_id": 2, "short_label": "Lớp 2: 50 km/h"},
-    {"filename": "test_class_18.png", "true_id": 18, "short_label": "Lớp 18: Nguy hiểm khác"},
-    {"filename": "test_class_25.png", "true_id": 25, "short_label": "Lớp 25: Công trường"},
+    {"filename": "test_class_14.png", "true_id": 14, "short_label": "Lớp 14: STOP", "auto_trim": False},
+    {"filename": "test_class_12.png", "true_id": 12, "short_label": "Lớp 12: Đường ưu tiên", "auto_trim": False},
+    {"filename": "test_class_13.png", "true_id": 13, "short_label": "Lớp 13: Nhường đường", "auto_trim": False},
+    {"filename": "test_class_17.png", "true_id": 17, "short_label": "Lớp 17: Cấm ngược chiều", "auto_trim": False},
+    {"filename": "test_class_40.png", "true_id": 40, "short_label": "Lớp 40: Vòng xuyến", "auto_trim": False},
+    {"filename": "test_class_02.png", "true_id": 2, "short_label": "Lớp 2: 50 km/h", "auto_trim": False},
+    {"filename": "test_class_18.png", "true_id": 18, "short_label": "Lớp 18: Nguy hiểm khác", "auto_trim": False},
+    {"filename": "test_class_25.png", "true_id": 25, "short_label": "Lớp 25: Công trường", "auto_trim": False},
+    {"filename": "external_scene_stop.png", "true_id": 14, "short_label": "Ngoại cảnh: STOP", "auto_trim": True},
+    {"filename": "external_scene_speed50.png", "true_id": 2, "short_label": "Ngoại cảnh: 50 km/h", "auto_trim": True},
 ]
 
 
